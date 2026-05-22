@@ -1,0 +1,14 @@
+# Xcode
+*.xcuserdata
+*.xcworkspace
+xcuserdata/
+DerivedData/
+*.xcuserstate
+*.xcbkptlist
+
+# macOS
+.DS_Store
+Thumbs.db
+
+# Generated
+$CODEX_HOME/generated_images/

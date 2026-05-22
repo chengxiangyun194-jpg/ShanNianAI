@@ -1,0 +1,45 @@
+name: ShanNianAI
+options:
+  bundleIdPrefix: com.shanian
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "15.0"
+
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    INFOPLIST_KEY_CFBundleDisplayName: "一闪AI"
+
+targets:
+  ShanNianAI:
+    type: application
+    platform: iOS
+    sources:
+      - path: Sources/ShanNianAI
+    settings:
+      base:
+        INFOPLIST_FILE: Sources/ShanNianAI/Resources/Info.plist
+        PRODUCT_BUNDLE_IDENTIFIER: com.shanian.flashai
+        DEVELOPMENT_TEAM: ""
+    dependencies:
+      - target: WidgetExtension
+      - target: ShanNianAITests
+        type: target
+
+  WidgetExtension:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: Sources/WidgetExtension
+    settings:
+      base:
+        INFOPLIST_FILE: Sources/WidgetExtension/Info.plist
+        PRODUCT_BUNDLE_IDENTIFIER: com.shanian.flashai.widget
+
+  ShanNianAITests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: Tests/ShanNianAITests
+    dependencies:
+      - target: ShanNianAI
