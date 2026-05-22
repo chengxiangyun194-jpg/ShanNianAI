@@ -95,7 +95,7 @@ struct ProSubscriptionView: View {
 
                     // Footer
                     VStack(spacing: 4) {
-                        Text("免费版：每月 50 条笔记 + 50 次 AI 分类")
+                        Text("免费版：每月 30 条笔记 + 30 次 AI 分类")
                             .font(.caption)
                             .foregroundColor(.secondary)
                         Text("订阅可随时在系统设置中取消")

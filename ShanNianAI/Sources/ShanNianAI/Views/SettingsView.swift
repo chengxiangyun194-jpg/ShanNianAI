@@ -6,10 +6,10 @@ struct SettingsView: View {
     @EnvironmentObject var notificationManager: NotificationManager
     @StateObject private var storeManager = StoreManager.shared
     @AppStorage("icloud_sync_enabled") private var iCloudSyncEnabled = false
-    @State private var apiKey = ""
-    @State private var showKeySaved = false
     @State private var showDeleteConfirmation = false
     @State private var showProSheet = false
+    @State private var devApiKey = UserDefaults.standard.string(forKey: "dev_direct_api_key") ?? ""
+    @State private var showDevKeySaved = false
     @State private var showExporter = false
     @State private var exportURL: URL?
     @State private var selectedExportFormat: ExportFormat = .markdown
@@ -44,31 +44,52 @@ struct SettingsView: View {
                     }
                 }
 
-                // AI
+                // AI 状态
+
+                // 开发者 Key（优先使用代理，Key 为回退）
                 Section {
                     VStack(alignment: .leading, spacing: 10) {
-                        Text("OpenAI API Key").font(.subheadline.bold())
-                        SecureField("sk-...", text: $apiKey)
+                        Text("开发者：直连 API Key").font(.subheadline.bold())
+                        SecureField("sk-...（DeepSeek 或 OpenAI）", text: $devApiKey)
                             .textContentType(.password)
                             .font(.caption.monospaced())
                             .padding(10)
                             .background(RoundedRectangle(cornerRadius: 8).fill(Color(.systemGray6)))
                         HStack {
-                            Text("用于 AI 分类、摘要和洞察生成").font(.caption2).foregroundColor(.secondary)
+                            Text("仅开发测试用，优先走代理").font(.caption2).foregroundColor(.secondary)
                             Spacer()
                             Button("保存") {
-                                UserDefaults.standard.set(apiKey, forKey: "openai_api_key")
+                                UserDefaults.standard.set(devApiKey, forKey: "dev_direct_api_key")
                                 HapticManager.success()
-                                showKeySaved = true
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) { showKeySaved = false }
+                                showDevKeySaved = true
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) { showDevKeySaved = false }
                             }
                             .buttonStyle(.borderedProminent)
                             .controlSize(.small)
-                            .disabled(apiKey.trimmingCharacters(in: .whitespaces).isEmpty)
+                            .disabled(devApiKey.trimmingCharacters(in: .whitespaces).isEmpty)
                         }
                     }
-                } header: { Label("AI 服务", systemImage: "brain") }
-                footer: { Text("Key 仅存储在本地设备") }
+                }
+                footer: { Text("Key 仅存本地。留空则走服务端代理") }
+
+                Section {
+                    HStack {
+                        Image(systemName: "brain.fill").foregroundColor(.purple)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("AI 服务").font(.subheadline.bold())
+                            Text("由服务端代理，无需自行配置")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        Spacer()
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(.green)
+                            .font(.caption)
+                    }
+                }
+                footer: {
+                    Text("AI 调用通过服务端代理，安全可靠")
+                }
 
                 // iCloud
                 Section {
@@ -95,33 +116,24 @@ struct SettingsView: View {
                     Toggle(isOn: $notificationManager.dailyReminderEnabled) {
                         Label("每日记录提醒", systemImage: "sun.max").foregroundColor(.orange)
                     }.disabled(!notificationManager.isAuthorized)
-                    if notificationManager.dailyReminderEnabled {
-                        DatePicker("提醒时间", selection: $notificationManager.reminderTime, displayedComponents: .hourAndMinute)
-                    }
-                    Toggle(isOn: $notificationManager.reviewReminderEnabled) {
-                        Label("回顾提醒", systemImage: "clock.arrow.circlepath").foregroundColor(.blue)
-                    }.disabled(!notificationManager.isAuthorized)
-                    if notificationManager.reviewReminderEnabled {
-                        Text("每天早上 9:00 提醒回顾 1/7/30 天前的笔记").font(.caption).foregroundColor(.secondary)
-                    }
                 } header: { Label("通知", systemImage: "bell") }
 
-                // Data Export
+                // Data
                 Section {
-                    Picker("格式", selection: $selectedExportFormat) {
-                        ForEach(ExportFormat.allCases) { fmt in
-                            Label(fmt.name, systemImage: fmt.icon).tag(fmt)
+                    Picker("导出格式", selection: $selectedExportFormat) {
+                        ForEach(ExportFormat.allCases, id: \.id) { format in
+                            Text(format.name).tag(format)
                         }
                     }
+
                     Button {
-                        isExporting = true
-                        DispatchQueue.global().async {
-                            let url = DataExporter.shared.export(
-                                notes: noteStore.notes.filter { !$0.isArchived },
-                                format: selectedExportFormat
-                            )
-                            DispatchQueue.main.async {
-                                isExporting = false
+                        Task {
+                            isExporting = true
+                            HapticManager.medium()
+                            let exporter = DataExporter.shared
+                            let url = await exporter.export(notes: noteStore.notes, format: selectedExportFormat)
+                            isExporting = false
+                            if let url = url {
                                 exportURL = url
                                 showExporter = true
                                 HapticManager.success()
@@ -169,7 +181,6 @@ struct SettingsView: View {
                 } header: { Label("关于", systemImage: "info.circle") }
             }
             .navigationTitle("设置")
-            .onAppear { apiKey = UserDefaults.standard.string(forKey: "openai_api_key") ?? "" }
             .sheet(isPresented: $showProSheet) { ProSubscriptionView() }
             .sheet(isPresented: $showExporter) {
                 if let url = exportURL {
@@ -180,9 +191,10 @@ struct SettingsView: View {
                 await storeManager.loadProducts()
                 await storeManager.checkEntitlements()
             }
-            .alert("已保存", isPresented: $showKeySaved) {
+            .alert("已保存", isPresented: $showDevKeySaved) {
                 Button("好的", role: .cancel) {}
-            } message: { Text("API Key 已安全存储") }
+            } message: { Text("本地 API Key 已存储") }
+
             .alert("确认删除", isPresented: $showDeleteConfirmation) {
                 Button("取消", role: .cancel) {}
                 Button("删除全部", role: .destructive) {
@@ -199,7 +211,7 @@ struct SettingsView: View {
                 Text("隐私政策").font(.title.bold())
                 Text("最后更新：2026年5月")
                 policySection("数据收集", "一闪AI 收集您主动输入的笔记内容，默认存储在设备本地。")
-                policySection("AI 处理", "笔记内容发送到 OpenAI API 处理，OpenAI 不会用于训练。")
+                policySection("AI 处理", "笔记内容通过服务端代理发送到 AI 模型处理，不会用于训练。")
                 policySection("iCloud 同步", "开启后通过 Apple CloudKit 在您的设备间同步。")
                 policySection("订阅付费", "一闪Pro 通过 Apple App Store 处理，遵循 Apple 隐私政策。")
                 policySection("通知权限", "本地通知，不涉及服务器。")

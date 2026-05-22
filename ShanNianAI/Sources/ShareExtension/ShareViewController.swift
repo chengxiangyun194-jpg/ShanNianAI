@@ -25,13 +25,13 @@ final class ShareViewController: UIViewController {
             for provider in attachments {
                 // Text
                 if provider.hasItemConformingToTypeIdentifier(UTType.plainText.identifier) {
-                    if let text = try? await loadItem(provider: provider, type: String.self) {
+                    if let text = try? await loadItem(provider: provider, typeIdentifier: UTType.plainText.identifier) as? String {
                         capturedText += text
                     }
                 }
                 // URL (e.g., shared from Safari)
                 else if provider.hasItemConformingToTypeIdentifier(UTType.url.identifier) {
-                    if let url = try? await loadItem(provider: provider, type: URL.self) {
+                    if let url = try? await loadItem(provider: provider, typeIdentifier: UTType.url.identifier) as? URL {
                         if !capturedText.isEmpty { capturedText += "\n" }
                         capturedText += url.absoluteString
                     }
@@ -46,13 +46,13 @@ final class ShareViewController: UIViewController {
         }
     }
 
-    private func loadItem<T>(provider: NSItemProvider, type: T.Type) async throws -> T? {
+    private func loadItem(provider: NSItemProvider, typeIdentifier: String) async throws -> Any? {
         try await withCheckedThrowingContinuation { continuation in
-            provider.loadItem(forTypeIdentifier: UTType.plainText.identifier) { item, error in
+            provider.loadItem(forTypeIdentifier: typeIdentifier) { item, error in
                 if let error = error {
                     continuation.resume(throwing: error)
                 } else {
-                    continuation.resume(returning: item as? T)
+                    continuation.resume(returning: item)
                 }
             }
         }

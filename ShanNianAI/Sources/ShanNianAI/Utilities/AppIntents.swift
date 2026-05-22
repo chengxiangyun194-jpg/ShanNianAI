@@ -73,7 +73,7 @@ struct ShanNianShortcuts: AppShortcutsProvider {
                 "在\(.applicationName)记录",
                 "\(.applicationName)捕捉",
                 "用\(.applicationName)记一下",
-                "闪念笔记记录",
+                "用${applicationName}闪念记录",
             ],
             shortTitle: "捕捉闪念",
             systemImageName: "sparkles"

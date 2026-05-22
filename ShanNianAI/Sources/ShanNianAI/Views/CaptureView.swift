@@ -10,6 +10,7 @@ struct CaptureView: View {
     @State private var placeholderIndex = 0
     @State private var submitScale: CGFloat = 1
     @State private var showVoiceTip = true
+    @State private var selectedCategory: NoteCategory = .uncategorized
 
     private let placeholders = [
         "刚想到什么？",
@@ -73,7 +74,7 @@ struct CaptureView: View {
                                 .scrollContentBackground(.hidden)
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 8)
-                                .frame(minHeight: 140)
+                                .frame(minHeight: 100)
                                 .onAppear { isFocused = true }
                                 .onChange(of: inputText) { _, newValue in
                                     if newValue.count > 500 {
@@ -91,12 +92,11 @@ struct CaptureView: View {
                                 .fill(Color(.systemGray6))
                         )
                         .overlay(alignment: .bottomTrailing) {
-                            // Voice button
-                            voiceButton
-                                .padding(10)
+                            voiceButton.padding(10)
                         }
-                        .accessibilityLabel("笔记输入框")
-                        .accessibilityHint("在这里输入你的闪念，最多500字")
+
+                        // 分类选取
+                        categoryPicker
 
                         HStack {
                             if speechRecognizer.isRecording {
@@ -111,32 +111,24 @@ struct CaptureView: View {
                     .padding(.horizontal)
 
                     Button {
-                        HapticManager.medium()
                         submitNote()
                     } label: {
                         HStack(spacing: 8) {
                             if isSubmitting {
-                                ProgressView()
-                                    .tint(.white)
-                            } else {
-                                Image(systemName: "arrow.up.circle.fill")
-                                    .font(.title3)
-                                Text("保存闪念")
-                                    .font(.headline)
+                                ProgressView().tint(.white)
                             }
+                            Text("保存闪念")
+                                .font(.headline)
+                            Image(systemName: "arrow.up")
                         }
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
+                        .padding(.vertical, 18)
                         .background(
-                            inputText.trimmingCharacters(in: .whitespaces).isEmpty
-                                ? AnyShapeStyle(Color.gray.opacity(0.3))
-                                : AnyShapeStyle(
-                                    LinearGradient(
-                                        colors: [.orange, .pink.opacity(0.8)],
-                                        startPoint: .leading,
-                                        endPoint: .trailing
-                                    )
-                                )
+                            LinearGradient(
+                                colors: [.orange, .pink],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
                         )
                         .foregroundColor(.white)
                         .clipShape(RoundedRectangle(cornerRadius: 16))
@@ -144,24 +136,74 @@ struct CaptureView: View {
                     }
                     .disabled(inputText.trimmingCharacters(in: .whitespaces).isEmpty || isSubmitting)
                     .padding(.horizontal)
-                    .accessibilityLabel("保存闪念")
-                }
 
-                Spacer()
-
-                if !noteStore.notes.isEmpty {
-                    recentNotesPreview
+                    if !noteStore.notes.isEmpty {
+                        recentNotesPreview
+                    }
                 }
             }
-            .navigationBarHidden(true)
             .overlay(alignment: .top) {
-                if showSuccess {
-                    successToast
-                        .transition(.move(edge: .top).combined(with: .opacity))
+                if showSuccess { successToast }
+            }
+        }
+    }
+
+    // MARK: - Category Picker
+
+    private var categoryPicker: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Label("分类", systemImage: selectedCategory.icon)
+                    .font(.caption.bold())
+                    .foregroundColor(selectedCategory.color)
+                Spacer()
+                if selectedCategory != .uncategorized {
+                    Button {
+                        HapticManager.light()
+                        selectedCategory = .uncategorized
+                    } label: {
+                        Text("清除")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
                 }
             }
-            .task {
-                await speechRecognizer.requestAuthorization()
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(NoteCategory.allCases, id: \.self) { cat in
+                        Button {
+                            HapticManager.light()
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                selectedCategory = cat
+                            }
+                        } label: {
+                            VStack(spacing: 4) {
+                                Image(systemName: cat.icon)
+                                    .font(.caption)
+                                Text(cat.rawValue)
+                                    .font(.caption2)
+                            }
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 8)
+                            .frame(minWidth: 52)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(selectedCategory == cat
+                                        ? cat.color.opacity(0.2)
+                                        : Color(.systemGray6))
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(selectedCategory == cat
+                                        ? cat.color
+                                        : .clear,
+                                        lineWidth: 1.5)
+                            )
+                            .foregroundColor(selectedCategory == cat ? cat.color : .secondary)
+                        }
+                    }
+                }
             }
         }
     }
@@ -170,34 +212,21 @@ struct CaptureView: View {
 
     private var voiceButton: some View {
         Button {
+            HapticManager.medium()
+            showVoiceTip = false
             if speechRecognizer.isRecording {
                 speechRecognizer.stopRecording()
-                HapticManager.light()
             } else {
-                Task {
-                    if !speechRecognizer.isAuthorized {
-                        await speechRecognizer.requestAuthorization()
-                    }
-                    if speechRecognizer.isAuthorized {
-                        speechRecognizer.startRecording()
-                        HapticManager.medium()
-                        showVoiceTip = false
-                    }
-                }
+                speechRecognizer.startRecording()
             }
         } label: {
-            Image(systemName: speechRecognizer.isRecording ? "mic.fill" : "mic")
-                .font(.title3)
-                .foregroundColor(speechRecognizer.isRecording ? .red : .gray)
-                .padding(10)
-                .background(
-                    Circle()
-                        .fill(speechRecognizer.isRecording
-                            ? Color.red.opacity(0.15)
-                            : Color(.systemGray5))
+            Image(systemName: speechRecognizer.isRecording ? "stop.circle.fill" : "mic.circle.fill")
+                .font(.title)
+                .foregroundStyle(
+                    speechRecognizer.isRecording
+                        ? AnyShapeStyle(LinearGradient(colors: [.red, .pink], startPoint: .topLeading, endPoint: .bottomTrailing))
+                        : AnyShapeStyle(Color.secondary)
                 )
-                .scaleEffect(speechRecognizer.isRecording ? 1.2 : 1)
-                .animation(.easeInOut(duration: 0.6).repeatForever(autoreverses: true), value: speechRecognizer.isRecording)
         }
         .accessibilityLabel(speechRecognizer.isRecording ? "停止录音" : "开始语音输入")
     }
@@ -208,74 +237,46 @@ struct CaptureView: View {
                 .fill(.red)
                 .frame(width: 8, height: 8)
                 .opacity(speechRecognizer.isRecording ? 1 : 0)
-                .animation(.easeInOut(duration: 0.5).repeatForever(autoreverses: true), value: speechRecognizer.isRecording)
-
-            Text("正在聆听...")
-                .font(.caption)
-                .foregroundColor(.red)
-
+            Text("正在聆听...").font(.caption).foregroundColor(.red)
             if showVoiceTip {
                 Text("说完点击麦克风停止")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
+                    .font(.caption2).foregroundColor(.secondary)
             }
         }
-        .transition(.opacity)
     }
 
-    // MARK: - Subviews
+    // MARK: - Stats
 
     private var quickStatsBar: some View {
         HStack(spacing: 20) {
             statItem(value: "\(noteStore.notes.count)", label: "总笔记")
-            statItem(
-                value: "\(noteStore.notes.filter { Calendar.current.isDateInToday($0.createdAt) }.count)",
-                label: "今日"
-            )
-            statItem(
-                value: "\(noteStore.notes.filter { Calendar.current.isDate($0.createdAt, inSameDayAs: Date().addingTimeInterval(-86400 * 7) ... Date()) }.count)",
-                label: "本周"
-            )
+            statItem(value: "\(noteStore.notes.filter { Calendar.current.isDateInToday($0.createdAt) }.count)", label: "今日")
+            statItem(value: "\(noteStore.notes.filter { $0.createdAt > Date().addingTimeInterval(-86400 * 7) }.count)", label: "本周")
         }
         .padding(.vertical, 10)
         .padding(.horizontal, 20)
         .background(RoundedRectangle(cornerRadius: 14).fill(.ultraThinMaterial))
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("统计：总笔记\(noteStore.notes.count)条，今日\(noteStore.notes.filter { Calendar.current.isDateInToday($0.createdAt) }.count)条")
     }
 
     private func statItem(value: String, label: String) -> some View {
         VStack(spacing: 2) {
-            Text(value)
-                .font(.title3.bold())
-                .foregroundColor(.orange)
-            Text(label)
-                .font(.caption2)
-                .foregroundColor(.secondary)
+            Text(value).font(.title3.bold()).foregroundColor(.orange)
+            Text(label).font(.caption2).foregroundColor(.secondary)
         }
     }
 
     private var recentNotesPreview: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("最近记录")
-                .font(.caption)
-                .foregroundColor(.secondary)
-                .padding(.horizontal)
+            Text("最近记录").font(.caption).foregroundColor(.secondary).padding(.horizontal)
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {
                     ForEach(noteStore.notes.prefix(5)) { note in
                         VStack(alignment: .leading, spacing: 4) {
-                            Text(note.content)
-                                .font(.caption)
-                                .lineLimit(2)
-                                .frame(width: 140, alignment: .leading)
+                            Text(note.content).font(.caption).lineLimit(2).frame(width: 140, alignment: .leading)
                             HStack {
-                                Image(systemName: note.category.icon)
-                                    .font(.caption2)
-                                Text(note.category.rawValue)
-                                    .font(.caption2)
-                            }
-                            .foregroundColor(.secondary)
+                                Image(systemName: note.category.icon).font(.caption2)
+                                Text(note.category.rawValue).font(.caption2)
+                            }.foregroundColor(.secondary)
                         }
                         .padding(10)
                         .background(RoundedRectangle(cornerRadius: 12).fill(Color(.systemGray6)))
@@ -289,10 +290,8 @@ struct CaptureView: View {
 
     private var successToast: some View {
         HStack(spacing: 8) {
-            Image(systemName: "checkmark.circle.fill")
-                .foregroundColor(.green)
-            Text("已保存")
-                .font(.subheadline.bold())
+            Image(systemName: "checkmark.circle.fill").foregroundColor(.green)
+            Text("已保存").font(.subheadline.bold())
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 12)
@@ -307,16 +306,18 @@ struct CaptureView: View {
         guard !trimmed.isEmpty else { return }
 
         isSubmitting = true
+        let cat = selectedCategory
 
         withAnimation(.easeInOut(duration: 0.1)) { submitScale = 0.95 }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) { submitScale = 1 }
         }
 
-        noteStore.createNote(content: trimmed)
+        noteStore.createNote(content: trimmed, category: cat == .uncategorized ? nil : cat)
         HapticManager.success()
 
         inputText = ""
+        selectedCategory = .uncategorized
         isSubmitting = false
 
         withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) { showSuccess = true }

@@ -9,6 +9,7 @@ final class NoteStoreTests: XCTestCase {
     var container: ModelContainer!
 
     override func setUp() async throws {
+        UsageTracker.resetForTesting()
         try await super.setUp()
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
         container = try ModelContainer(for: Note.self, configurations: config)
@@ -17,6 +18,7 @@ final class NoteStoreTests: XCTestCase {
     }
 
     override func tearDown() async throws {
+        store.cleanup()
         store = nil
         container = nil
         try await super.tearDown()

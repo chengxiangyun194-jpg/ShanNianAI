@@ -3,20 +3,26 @@ import Foundation
 final class AIService {
     static let shared = AIService()
 
-    private var apiKey: String {
-        UserDefaults.standard.string(forKey: "openai_api_key") ?? ""
-    }
+    // MARK: - 配置
+    // 优先走服务端代理；如果代理不可用且设置了本地 Key，走直连
+    private let proxyURL = "https://YOUR_PROJECT.vercel.app/api"
 
-    private let baseURL = "https://api.openai.com/v1"
-    private let model = "gpt-4.1-mini"
+    private var directBaseURL: String { "https://api.deepseek.com/v1" }
+    private var directAPIKey: String {
+        UserDefaults.standard.string(forKey: "dev_direct_api_key") ?? ""
+    }
+    private var useDirectMode: Bool { !directAPIKey.isEmpty }
+
+    private let appToken = "shan-nian-ai-2026"
+    private let model = "deepseek-chat"
 
     private var session: URLSession {
         let config = URLSessionConfiguration.default
-        config.timeoutIntervalForRequest = 30
+        config.timeoutIntervalForRequest = 15
         return URLSession(configuration: config)
     }
 
-    var isConfigured: Bool { !apiKey.isEmpty }
+    var isConfigured: Bool { true }
 
     // MARK: - Classification
 
@@ -100,16 +106,91 @@ final class AIService {
         return resp.relatedIDs.compactMap { UUID(uuidString: $0) }
     }
 
+    // MARK: - Inspiration Analysis
+
+    func analyzeInspiration(_ note: Note) async throws -> InspirationAnalysis {
+        let prompt = """
+        你是一个创意孵化助手。请对以下灵感笔记进行深度分析和延伸。
+
+        灵感内容：
+        \(note.content)
+
+        AI摘要：\(note.aiSummary ?? "无")
+        标签：\(note.tags.joined(separator: "、"))
+
+        请返回如下JSON（不要包含markdown代码块标记）：
+        {
+          "extensions": ["创意延伸1", "创意延伸2", "创意延伸3"],
+          "suggestions": ["实践建议1", "实践建议2"],
+          "relatedFields": ["相关领域1", "相关领域2"],
+          "coreInsight": "核心洞察（30字内）"
+        }
+        """
+
+        let data = try await chatCompletion(prompt: prompt)
+        return try decode(from: data)
+    }
+
     // MARK: - Private
 
     private func chatCompletion(prompt: String) async throws -> Data {
-        guard isConfigured else { throw AIServiceError.notConfigured }
+        // 优先代理，失败回退直连
+        if useDirectMode {
+            return try await directChatCompletion(prompt: prompt)
+        }
 
-        let url = URL(string: "\(baseURL)/chat/completions")!
+        do {
+            return try await proxyChatCompletion(prompt: prompt)
+        } catch {
+            return try await directChatCompletion(prompt: prompt)
+        }
+    }
+
+    private func proxyChatCompletion(prompt: String) async throws -> Data {
+        let url = URL(string: "\(proxyURL)/chat")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        request.setValue(appToken, forHTTPHeaderField: "X-App-Token")
+
+        let body: [String: Any] = [
+            "model": model,
+            "messages": [
+                ["role": "system", "content": "你是一个精确的JSON输出助手，只输出要求的JSON格式，不加任何markdown标记。"],
+                ["role": "user", "content": prompt]
+            ],
+            "temperature": 0.3,
+            "max_tokens": 800
+        ]
+
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+        let (data, response) = try await session.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw AIServiceError.requestFailed
+        }
+
+        if httpResponse.statusCode == 401 {
+            throw AIServiceError.notConfigured
+        }
+
+        guard httpResponse.statusCode == 200 else {
+            throw AIServiceError.requestFailed
+        }
+
+        return try extractContent(from: data)
+    }
+
+    private func directChatCompletion(prompt: String) async throws -> Data {
+        guard !directAPIKey.isEmpty else {
+            throw AIServiceError.notConfigured
+        }
+
+        let url = URL(string: "\(directBaseURL)/chat/completions")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(directAPIKey)", forHTTPHeaderField: "Authorization")
 
         let body: [String: Any] = [
             "model": model,
@@ -128,6 +209,10 @@ final class AIService {
             throw AIServiceError.requestFailed
         }
 
+        return try extractContent(from: data)
+    }
+
+    private func extractContent(from data: Data) throws -> Data {
         struct ChatResponse: Codable {
             struct Choice: Codable {
                 struct Message: Codable { let content: String }
@@ -165,8 +250,8 @@ enum AIServiceError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .notConfigured: return "请先在设置中配置 OpenAI API Key"
-        case .requestFailed: return "AI 服务请求失败，请检查网络或 API Key"
+        case .notConfigured: return "AI 服务未配置，请在设置中添加 API Key"
+        case .requestFailed: return "AI 服务请求失败，请检查网络或 Key"
         case .invalidResponse: return "AI 返回数据异常，请重试"
         }
     }

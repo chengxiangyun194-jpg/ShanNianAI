@@ -3,6 +3,65 @@ import SwiftData
 import SwiftUI
 import WidgetKit
 
+// MARK: - 免费额度追踪
+
+struct UsageTracker {
+    private struct Keys {
+        static let noteCount = "usage_note_count"
+        static let aiCount = "usage_ai_count"
+        static let monthKey = "usage_month_key"
+    }
+
+    static let noteLimit = 30
+    static let aiLimit = 30
+
+    static func resetForTesting() {
+        UserDefaults.standard.removeObject(forKey: Keys.noteCount)
+        UserDefaults.standard.removeObject(forKey: Keys.aiCount)
+        UserDefaults.standard.removeObject(forKey: Keys.monthKey)
+    }
+
+    private static var currentMonthKey: String {
+        let f = DateFormatter()
+        f.dateFormat = "yyyy-MM"
+        return f.string(from: Date())
+    }
+
+    private static func ensureMonth() {
+        let stored = UserDefaults.standard.string(forKey: Keys.monthKey) ?? ""
+        if stored != currentMonthKey {
+            UserDefaults.standard.set(currentMonthKey, forKey: Keys.monthKey)
+            UserDefaults.standard.set(0, forKey: Keys.noteCount)
+            UserDefaults.standard.set(0, forKey: Keys.aiCount)
+        }
+    }
+
+    static var noteCount: Int {
+        ensureMonth()
+        return UserDefaults.standard.integer(forKey: Keys.noteCount)
+    }
+
+    static var aiCount: Int {
+        ensureMonth()
+        return UserDefaults.standard.integer(forKey: Keys.aiCount)
+    }
+
+    static var isNoteLimitReached: Bool { noteCount >= noteLimit }
+    static var isAILimitReached: Bool { aiCount >= aiLimit }
+
+    static func recordNote() {
+        ensureMonth()
+        UserDefaults.standard.set(noteCount + 1, forKey: Keys.noteCount)
+    }
+
+    static func recordAI() {
+        ensureMonth()
+        UserDefaults.standard.set(aiCount + 1, forKey: Keys.aiCount)
+    }
+}
+
+// MARK: - NoteStore
+
 @MainActor
 final class NoteStore: ObservableObject {
     @Published var notes: [Note] = []
@@ -13,12 +72,24 @@ final class NoteStore: ObservableObject {
 
     private var modelContext: ModelContext?
     private let aiService = AIService.shared
+    private var aiTask: Task<Void, Never>?
+
+    var usageNoteCount: Int { UsageTracker.noteCount }
+    var usageAICount: Int { UsageTracker.aiCount }
+    var noteLimit: Int { UsageTracker.noteLimit }
+    var aiLimit: Int { UsageTracker.aiLimit }
 
     func configure(with context: ModelContext) {
         self.modelContext = context
         fetchNotes()
         updateStreak()
         syncWidgetData()
+    }
+
+    func cleanup() {
+        aiTask?.cancel()
+        modelContext = nil
+        notes = []
     }
 
     // MARK: - Widget Sync
@@ -35,18 +106,28 @@ final class NoteStore: ObservableObject {
 
     // MARK: - CRUD
 
-    func createNote(content: String) {
+    func createNote(content: String, category: NoteCategory? = nil) {
         guard let ctx = modelContext else { return }
+
+        if !StoreManager.shared.isPro && UsageTracker.isNoteLimitReached {
+            errorMessage = "本月免费笔记已达 \(UsageTracker.noteLimit) 条上限，升级Pro解锁无限"
+            return
+        }
+
         let note = Note(content: content)
+        if let cat = category { note.category = cat }
         ctx.insert(note)
         save()
+        UsageTracker.recordNote()
         recordTodayActivity()
         fetchNotes()
         updateStreak()
         syncWidgetData()
 
-        Task {
+        aiTask = Task {
+            guard !Task.isCancelled else { return }
             await autoClassify(note)
+            guard !Task.isCancelled else { return }
             await findRelated(for: note)
         }
     }
@@ -115,7 +196,6 @@ final class NoteStore: ObservableObject {
         let today = calendar.startOfDay(for: Date())
         var checkDate = today
 
-        // Walk backwards from today
         for record in sorted.reversed() {
             let recordDay = calendar.startOfDay(for: record.date)
             let diff = calendar.dateComponents([.day], from: recordDay, to: checkDate).day ?? 999
@@ -124,7 +204,6 @@ final class NoteStore: ObservableObject {
                 streak += 1
                 checkDate = calendar.date(byAdding: .day, value: -1, to: checkDate) ?? checkDate
             } else if diff == 1 && (try? ctx.fetch(FetchDescriptor<DailyRecord>(predicate: #Predicate { $0.date == checkDate })).first) == nil {
-                // Allow one gap day
                 streak += 1
                 checkDate = calendar.date(byAdding: .day, value: -1, to: recordDay) ?? recordDay
             } else if recordDay < checkDate {
@@ -139,12 +218,19 @@ final class NoteStore: ObservableObject {
 
     func autoClassify(_ note: Note) async {
         guard aiService.isConfigured else { return }
+
+        if !StoreManager.shared.isPro && UsageTracker.isAILimitReached {
+            errorMessage = "本月免费 AI 次数已达 \(UsageTracker.aiLimit) 次上限，升级Pro解锁无限"
+            return
+        }
+
         do {
             let result = try await aiService.classify(content: note.content)
             note.category = result.category
             note.tags = result.tags
             note.aiSummary = result.summary
             note.modifiedAt = Date()
+            UsageTracker.recordAI()
             save()
             fetchNotes()
         } catch {

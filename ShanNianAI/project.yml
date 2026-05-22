@@ -55,5 +55,11 @@ targets:
     platform: iOS
     sources:
       - path: Tests/ShanNianAITests
+    settings:
+      base:
+        INFOPLIST_FILE: Tests/ShanNianAITests/Info.plist
+        PRODUCT_BUNDLE_IDENTIFIER: com.shanian.flashai.tests
+        BUNDLE_LOADER: "$(TEST_HOST)"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/ShanNianAI.app/ShanNianAI"
     dependencies:
       - target: ShanNianAI

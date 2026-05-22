@@ -4,8 +4,6 @@ struct OnboardingView: View {
     @EnvironmentObject var noteStore: NoteStore
     @Binding var hasCompletedOnboarding: Bool
     @State private var currentPage = 0
-    @State private var apiKey = ""
-    @State private var showKeyError = false
 
     private let pages: [OnboardingPage] = [
         OnboardingPage(
@@ -20,7 +18,7 @@ struct OnboardingView: View {
             gradient: [.purple, .blue],
             title: "AI 智能整理",
             subtitle: "自动分类 · 智能摘要 · 洞察周报",
-            description: "配置 OpenAI API Key 后，每条笔记都会自动获得 AI 分类和摘要。\n每周生成个性化成长洞察。"
+            description: "AI 自动为每条笔记分类、打标签、生成摘要。\n每周生成个性化成长洞察，帮你发现思考的轨迹。"
         ),
         OnboardingPage(
             icon: "chart.bar.fill",
@@ -28,14 +26,6 @@ struct OnboardingView: View {
             title: "追踪成长",
             subtitle: "连续记录 · 定时回顾 · 数据洞察",
             description: "保持每日记录，积累连续天数。\n定期回顾过去的笔记，见证自己的成长轨迹。"
-        ),
-        OnboardingPage(
-            icon: "key.fill",
-            gradient: [.blue, .indigo],
-            title: "配置 AI 服务",
-            subtitle: "输入你的 OpenAI API Key",
-            description: "Key 仅存储在本地设备，\n通过官方 API 调用，安全可靠。",
-            isConfig: true
         ),
     ]
 
@@ -60,7 +50,7 @@ struct OnboardingView: View {
                 // Page content
                 TabView(selection: $currentPage) {
                     ForEach(Array(pages.enumerated()), id: \.offset) { index, page in
-                        OnboardingPageView(page: page, apiKey: $apiKey)
+                        OnboardingPageView(page: page)
                             .tag(index)
                     }
                 }
@@ -68,26 +58,6 @@ struct OnboardingView: View {
 
                 // Bottom button
                 VStack(spacing: 12) {
-                    if pages[currentPage].isConfig {
-                        VStack(spacing: 12) {
-                            SecureField("sk-...", text: $apiKey)
-                                .textContentType(.password)
-                                .font(.subheadline.monospaced())
-                                .padding(14)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 12)
-                                        .fill(Color(.systemGray6))
-                                )
-
-                            if showKeyError {
-                                Text("请输入有效的 API Key（以 sk- 开头）")
-                                    .font(.caption)
-                                    .foregroundColor(.red)
-                            }
-                        }
-                        .padding(.horizontal, 40)
-                    }
-
                     Button {
                         handleContinue()
                     } label: {
@@ -124,18 +94,7 @@ struct OnboardingView: View {
     }
 
     private func handleContinue() {
-        if pages[currentPage].isConfig {
-            if !apiKey.trimmingCharacters(in: .whitespaces).isEmpty &&
-               apiKey.hasPrefix("sk-") {
-                UserDefaults.standard.set(apiKey, forKey: "openai_api_key")
-                showKeyError = false
-                completeOnboarding()
-            } else {
-                HapticManager.warning()
-                showKeyError = true
-                return
-            }
-        } else if currentPage < pages.count - 1 {
+        if currentPage < pages.count - 1 {
             HapticManager.selection()
             withAnimation { currentPage += 1 }
         } else {
@@ -159,20 +118,17 @@ struct OnboardingPage {
     let title: String
     let subtitle: String
     let description: String
-    var isConfig: Bool = false
 }
 
 // MARK: - Page View
 
 struct OnboardingPageView: View {
     let page: OnboardingPage
-    @Binding var apiKey: String
 
     var body: some View {
         VStack(spacing: 32) {
             Spacer()
 
-            // Icon
             ZStack {
                 RoundedRectangle(cornerRadius: 32)
                     .fill(
@@ -195,7 +151,6 @@ struct OnboardingPageView: View {
                     )
             }
 
-            // Text
             VStack(spacing: 10) {
                 Text(page.title)
                     .font(.system(size: 32, weight: .bold, design: .rounded))

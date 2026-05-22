@@ -88,14 +88,14 @@ open ShanNianAI.xcodeproj
 
 | Product ID | 类型 |
 |-----------|------|
-| com.shanian.flashai.pro.monthly | 自动续期订阅 ¥12/月 |
-| com.shanian.flashai.pro.yearly | 自动续期订阅 ¥88/年 |
+| com.shanian.flashai.pro.monthly | 自动续期订阅 ¥6/月 |
+| com.shanian.flashai.pro.yearly | 自动续期订阅 ¥50/年 |
 
 ## 定价
 
-- 免费：每月 50 条笔记 + 50 次 AI 分类
-- 一闪Pro 月度：¥12/月
-- 一闪Pro 年度：¥88/年
+- 免费：每月 30 条笔记 + 30 次 AI 分类
+- 一闪Pro 月度：¥6/月
+- 一闪Pro 年度：¥50/年
 
 ## License
 

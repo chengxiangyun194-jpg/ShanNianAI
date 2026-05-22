@@ -116,7 +116,7 @@ final class StoreManager: ObservableObject {
 
     // MARK: - Private
 
-    private func handleTransaction(_ transaction: Transaction) async {
+    private func handleTransaction(_ transaction: StoreKit.Transaction) async {
         if let revocationDate = transaction.revocationDate {
             // Transaction revoked
             purchasedProductIDs.remove(transaction.productID)

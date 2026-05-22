@@ -8,24 +8,17 @@ struct ShanNianAIApp: App {
     @AppStorage("has_completed_onboarding") private var hasCompletedOnboarding = false
     @AppStorage("icloud_sync_enabled") private var iCloudSyncEnabled = false
 
-    var modelContainer: ModelContainer {
+    @State private var sharedModelContainer: ModelContainer = {
+        let schema = Schema([Note.self, DailyRecord.self])
         do {
-            if iCloudSyncEnabled {
-                let schema = Schema([Note.self, DailyRecord.self])
-                let config = ModelConfiguration(
-                    schema: schema,
-                    cloudKitContainerIdentifier: "iCloud.com.shanian.flashai"
-                )
-                return try ModelContainer(for: schema, configurations: config)
-            } else {
-                let schema = Schema([Note.self, DailyRecord.self])
-                let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-                return try ModelContainer(for: schema, configurations: config)
-            }
+            let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+            return try ModelContainer(for: schema, configurations: config)
         } catch {
-            fatalError("Failed to create ModelContainer: \(error)")
+            print("Persistent store unavailable, using in-memory. \(error)")
+            let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+            return (try? ModelContainer(for: schema, configurations: config))!
         }
-    }
+    }()
 
     var body: some Scene {
         WindowGroup {
@@ -33,7 +26,7 @@ struct ShanNianAIApp: App {
                 ContentView()
                     .environmentObject(noteStore)
                     .environmentObject(notificationManager)
-                    .modelContainer(modelContainer)
+                    .modelContainer(sharedModelContainer)
                     .task {
                         await notificationManager.requestAuthorization()
                     }
@@ -41,7 +34,7 @@ struct ShanNianAIApp: App {
                 OnboardingView(hasCompletedOnboarding: $hasCompletedOnboarding)
                     .environmentObject(noteStore)
                     .environmentObject(notificationManager)
-                    .modelContainer(modelContainer)
+                    .modelContainer(sharedModelContainer)
                     .task {
                         await notificationManager.requestAuthorization()
                     }

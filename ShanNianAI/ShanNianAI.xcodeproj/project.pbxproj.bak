@@ -1,0 +1,576 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+		/* Begin PBXBuildFile section */
+		E3E713E9FF47B2FF570F509D /* ShanNianAIApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 437BC22F07EA2F32598A873C /* ShanNianAIApp.swift */; };
+		6ADB893F7DE3ABDC1A7FE9A3 /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = 604F1D24944E5795E06D3781 /* Note.swift */; };
+		32654E6E9A47211E79053FAD /* NoteCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5365FB696C0CD1169CAC0FFE /* NoteCategory.swift */; };
+		6FC59CD3DD9EE57CDE37972B /* NoteStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 222175922CEED799E06FDCC2 /* NoteStore.swift */; };
+		F40813C69264CD6001D530D2 /* AIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECC61BC944D884ED50909C0 /* AIService.swift */; };
+		FA5A7DD8B6DFF3EE0A75E5F9 /* AppIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B5962B4D4228F86DB01CBBF /* AppIntents.swift */; };
+		083DBEA2793D05CA090BE47E /* DataExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE73B076C4F66BD4BAF81CC4 /* DataExporter.swift */; };
+		1719D085E00C6D7338C7162F /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C6387844CAA6EA4C0DDAFEE /* HapticManager.swift */; };
+		7CC6A4578D7BC92F24317DF7 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3794394805B96699A47D154 /* NotificationManager.swift */; };
+		F9DE7A1BAC6BA78DB651CC92 /* SpeechRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B191D9E1EDFB18E0634DE5 /* SpeechRecognizer.swift */; };
+		4B8B8FB37E8815B715B0E5B8 /* StoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 301249CA8AA7231AFD5F100E /* StoreManager.swift */; };
+		965FE849E02C3F56B9AF13BA /* CaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA9028D0B93D24CBB2E9014 /* CaptureView.swift */; };
+		946E716FEDDD90CA9DFDEA18 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3ADBD84BF364981B74DE /* ContentView.swift */; };
+		2604F2DCB76DD59B18206B12 /* InsightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDB39D9E65B59F11C55DC182 /* InsightsView.swift */; };
+		1845D30BEA559B75DB9BA92D /* NoteDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B9C245798EAE79AE745485 /* NoteDetailView.swift */; };
+		15AEE98FA739D48BC8C2CC1C /* NoteListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2130DDEA94A3BD73BD69F186 /* NoteListView.swift */; };
+		EEF626555E1E61787913B0D7 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54DAF1709D7D4314C55A2B44 /* OnboardingView.swift */; };
+		415886B4C2105467723E17A8 /* ProSubscriptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6543B9701373D977B2D50EAF /* ProSubscriptionView.swift */; };
+		7E97F03890A93D2BE537FE8D /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B23BB9518D48E91A230FB3 /* SettingsView.swift */; };
+		CD7BF704C1205746772F3F07 /* ShanNianWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18A7DC604C2A5AB54D5B6286 /* ShanNianWidget.swift */; };
+		2865AA9548FD1187FCF40761 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D7224DFC4EF017AAE07E93C /* ShareViewController.swift */; };
+		A387B585175D514EF9EC4709 /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA9E7015FD0C9DB5EEDF71F /* Note.swift */; };
+		107825163A0FEA4E907B424D /* NoteCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0FED19D07EDF6636B252C5E /* NoteCategory.swift */; };
+		EBC808CA166472BED65A2CDF /* AIServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B2F6869431B8A5A195E1D31 /* AIServiceTests.swift */; };
+		32FBDC5E4A255890F4ECBD52 /* NoteModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 226E21CE31022D20AF51E913 /* NoteModelTests.swift */; };
+		E26460E3A72BDEA7E770EDCA /* NoteStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95494936CA76032F05C6AE00 /* NoteStoreTests.swift */; };
+		/* End PBXBuildFile section */
+
+		/* Begin PBXFileReference section */
+		437BC22F07EA2F32598A873C /* ShanNianAIApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/ShanNianAI/ShanNianAIApp.swift; sourceTree = "<group>"; };
+		604F1D24944E5795E06D3781 /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/ShanNianAI/Models/Note.swift; sourceTree = "<group>"; };
+		5365FB696C0CD1169CAC0FFE /* NoteCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/ShanNianAI/Models/NoteCategory.swift; sourceTree = "<group>"; };
+		222175922CEED799E06FDCC2 /* NoteStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/ShanNianAI/CoreData/NoteStore.swift; sourceTree = "<group>"; };
+		3ECC61BC944D884ED50909C0 /* AIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/ShanNianAI/Services/AIService.swift; sourceTree = "<group>"; };
+		8B5962B4D4228F86DB01CBBF /* AppIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/ShanNianAI/Utilities/AppIntents.swift; sourceTree = "<group>"; };
+		FE73B076C4F66BD4BAF81CC4 /* DataExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/ShanNianAI/Utilities/DataExporter.swift; sourceTree = "<group>"; };
+		7C6387844CAA6EA4C0DDAFEE /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/ShanNianAI/Utilities/HapticManager.swift; sourceTree = "<group>"; };
+		E3794394805B96699A47D154 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/ShanNianAI/Utilities/NotificationManager.swift; sourceTree = "<group>"; };
+		C5B191D9E1EDFB18E0634DE5 /* SpeechRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/ShanNianAI/Utilities/SpeechRecognizer.swift; sourceTree = "<group>"; };
+		301249CA8AA7231AFD5F100E /* StoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/ShanNianAI/Utilities/StoreManager.swift; sourceTree = "<group>"; };
+		CEA9028D0B93D24CBB2E9014 /* CaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/ShanNianAI/Views/CaptureView.swift; sourceTree = "<group>"; };
+		9F0C3ADBD84BF364981B74DE /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/ShanNianAI/Views/ContentView.swift; sourceTree = "<group>"; };
+		DDB39D9E65B59F11C55DC182 /* InsightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/ShanNianAI/Views/InsightsView.swift; sourceTree = "<group>"; };
+		06B9C245798EAE79AE745485 /* NoteDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/ShanNianAI/Views/NoteDetailView.swift; sourceTree = "<group>"; };
+		2130DDEA94A3BD73BD69F186 /* NoteListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/ShanNianAI/Views/NoteListView.swift; sourceTree = "<group>"; };
+		54DAF1709D7D4314C55A2B44 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/ShanNianAI/Views/OnboardingView.swift; sourceTree = "<group>"; };
+		6543B9701373D977B2D50EAF /* ProSubscriptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/ShanNianAI/Views/ProSubscriptionView.swift; sourceTree = "<group>"; };
+		E7B23BB9518D48E91A230FB3 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/ShanNianAI/Views/SettingsView.swift; sourceTree = "<group>"; };
+		055736334D76E967752D1460 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Sources/ShanNianAI/Resources/Info.plist; sourceTree = "<group>"; };
+		D7F890BABA01D4CB5B751EBB /* ShanNianAI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Sources/ShanNianAI/ShanNianAI.entitlements; sourceTree = "<group>"; };
+		18A7DC604C2A5AB54D5B6286 /* ShanNianWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/WidgetExtension/ShanNianWidget.swift; sourceTree = "<group>"; };
+		28389A00DD7DE89952CDDCED /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Sources/WidgetExtension/Info.plist; sourceTree = "<group>"; };
+		572708360162AE1F3184E81C /* WidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Sources/WidgetExtension/WidgetExtension.entitlements; sourceTree = "<group>"; };
+		8D7224DFC4EF017AAE07E93C /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/ShareExtension/ShareViewController.swift; sourceTree = "<group>"; };
+		93D87B12AE6E001A896E3811 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Sources/ShareExtension/Info.plist; sourceTree = "<group>"; };
+		AA6583DFEA9FE8A0090A9F21 /* ShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Sources/ShareExtension/ShareExtension.entitlements; sourceTree = "<group>"; };
+		4F88F1D88FDDAF94ACE0023A /* MainInterface.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Sources/ShareExtension/MainInterface.storyboard; sourceTree = "<group>"; };
+		EBA9E7015FD0C9DB5EEDF71F /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/ShanNianAI/Models/Note.swift; sourceTree = "<group>"; };
+		E0FED19D07EDF6636B252C5E /* NoteCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/ShanNianAI/Models/NoteCategory.swift; sourceTree = "<group>"; };
+		1B2F6869431B8A5A195E1D31 /* AIServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/ShanNianAITests/AIServiceTests.swift; sourceTree = "<group>"; };
+		226E21CE31022D20AF51E913 /* NoteModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/ShanNianAITests/NoteModelTests.swift; sourceTree = "<group>"; };
+		95494936CA76032F05C6AE00 /* NoteStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/ShanNianAITests/NoteStoreTests.swift; sourceTree = "<group>"; };
+		CB001F83F36F7580604E00FC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Tests/ShanNianAITests/Info.plist; sourceTree = "<group>"; };
+		7B435A454755500F766CACFA /* ShanNianAI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ShanNianAI.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7FADB00654B661F037F06C60 /* WidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		0993950173A9FE2E64489F86 /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		0C6AB4133E23CED769115FDB /* ShanNianAITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ShanNianAITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		/* End PBXFileReference section */
+
+		/* Begin PBXGroup section */
+		3131EEA81B55EAD4E862B890 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				604F1D24944E5795E06D3781 /* Models */,
+				5365FB696C0CD1169CAC0FFE /* Models */,
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
+		CA48C5A43EB9F26DF5662E74 /* CoreData */ = {
+			isa = PBXGroup;
+			children = (
+				222175922CEED799E06FDCC2 /* CoreData */,
+			);
+			name = CoreData;
+			sourceTree = "<group>";
+		};
+		BC3964C306F2557F2B06342F /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				3ECC61BC944D884ED50909C0 /* Services */,
+			);
+			name = Services;
+			sourceTree = "<group>";
+		};
+		2A443B063280C78031F7D2C8 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				8B5962B4D4228F86DB01CBBF /* Utilities */,
+				FE73B076C4F66BD4BAF81CC4 /* Utilities */,
+				7C6387844CAA6EA4C0DDAFEE /* Utilities */,
+				E3794394805B96699A47D154 /* Utilities */,
+				C5B191D9E1EDFB18E0634DE5 /* Utilities */,
+				301249CA8AA7231AFD5F100E /* Utilities */,
+			);
+			name = Utilities;
+			sourceTree = "<group>";
+		};
+		BC0D1920314B75C8C527AA20 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				CEA9028D0B93D24CBB2E9014 /* Views */,
+				9F0C3ADBD84BF364981B74DE /* Views */,
+				DDB39D9E65B59F11C55DC182 /* Views */,
+				06B9C245798EAE79AE745485 /* Views */,
+				2130DDEA94A3BD73BD69F186 /* Views */,
+				54DAF1709D7D4314C55A2B44 /* Views */,
+				6543B9701373D977B2D50EAF /* Views */,
+				E7B23BB9518D48E91A230FB3 /* Views */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
+		AE4E63C7ED9DFAD4427C4DB2 /* ShanNianAI */ = {
+			isa = PBXGroup;
+			children = (
+				3131EEA81B55EAD4E862B890 /* ShanNianAI */,
+				CA48C5A43EB9F26DF5662E74 /* ShanNianAI */,
+				BC3964C306F2557F2B06342F /* ShanNianAI */,
+				2A443B063280C78031F7D2C8 /* ShanNianAI */,
+				BC0D1920314B75C8C527AA20 /* ShanNianAI */,
+				437BC22F07EA2F32598A873C /* ShanNianAI */,
+				055736334D76E967752D1460 /* ShanNianAI */,
+			);
+			name = ShanNianAI;
+			path = Sources/ShanNianAI;
+			sourceTree = "<group>";
+		};
+		5DC150DF9179470DD0C75844 /* WidgetExtension */ = {
+			isa = PBXGroup;
+			children = (
+				18A7DC604C2A5AB54D5B6286 /* WidgetExtension */,
+				28389A00DD7DE89952CDDCED /* WidgetExtension */,
+				572708360162AE1F3184E81C /* WidgetExtension */,
+			);
+			name = WidgetExtension;
+			path = Sources/WidgetExtension;
+			sourceTree = "<group>";
+		};
+		08E561ED707BFABDB9F5B8C6 /* ShareExtension */ = {
+			isa = PBXGroup;
+			children = (
+				8D7224DFC4EF017AAE07E93C /* ShareExtension */,
+				93D87B12AE6E001A896E3811 /* ShareExtension */,
+				AA6583DFEA9FE8A0090A9F21 /* ShareExtension */,
+				4F88F1D88FDDAF94ACE0023A /* ShareExtension */,
+				EBA9E7015FD0C9DB5EEDF71F /* ShareExtension */,
+				E0FED19D07EDF6636B252C5E /* ShareExtension */,
+			);
+			name = ShareExtension;
+			path = Sources/ShareExtension;
+			sourceTree = "<group>";
+		};
+		688F9970FC12623715CD727B /* ShanNianAITests */ = {
+			isa = PBXGroup;
+			children = (
+				1B2F6869431B8A5A195E1D31 /* ShanNianAITests */,
+				226E21CE31022D20AF51E913 /* ShanNianAITests */,
+				95494936CA76032F05C6AE00 /* ShanNianAITests */,
+				CB001F83F36F7580604E00FC /* ShanNianAITests */,
+			);
+			name = ShanNianAITests;
+			path = Tests/ShanNianAITests;
+			sourceTree = "<group>";
+		};
+		223D54610AC47CE2E71DDC0D /*  */ = {
+			isa = PBXGroup;
+			children = (
+				AE4E63C7ED9DFAD4427C4DB2 /*  */,
+				5DC150DF9179470DD0C75844 /*  */,
+				08E561ED707BFABDB9F5B8C6 /*  */,
+				688F9970FC12623715CD727B /*  */,
+				7B435A454755500F766CACFA /*  */,
+				7FADB00654B661F037F06C60 /*  */,
+				0993950173A9FE2E64489F86 /*  */,
+				0C6AB4133E23CED769115FDB /*  */,
+			);
+			name = ;
+			sourceTree = "<group>";
+		};
+		/* End PBXGroup section */
+
+		/* Begin PBXNativeTarget section */
+		81D9B9E9A116DE9C8CD44C51 /* ShanNianAI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7E4D6FBD74BE16A19E315343 /* Build configuration list for PBXNativeTarget "ShanNianAI" */;
+			buildPhases = (
+				9E1B6ECC8374DD95EE6FFC19,
+BDD0D003502A6B17656B8C08,
+D5F59FE83A29E2721A203AB9,
+BC74FFC702709BD680F678E7,
+			);
+			buildRules = (
+			);
+			dependencies = (
+
+			);
+			name = ShanNianAI;
+			productName = ShanNianAI;
+			productReference = 7B435A454755500F766CACFA;
+			productType = "com.apple.product-type.application";
+		};
+		84280DD8D515249BB7A20EF8 /* WidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B2EBE03947DBD44D2E0E8C6E /* Build configuration list for PBXNativeTarget "WidgetExtension" */;
+			buildPhases = (
+				404ABC7A33E2C9964953EC40,
+A1BDD44B586B56A5F5EADF16,
+CD8EFB97319B106A0FFAEAD9,
+			);
+			buildRules = (
+			);
+			dependencies = (
+
+			);
+			name = WidgetExtension;
+			productName = WidgetExtension;
+			productReference = 7FADB00654B661F037F06C60;
+			productType = "com.apple.product-type.app-extension";
+		};
+		6E32B8AEEC93D003B43F0C20 /* ShareExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6EA74CFE8C71400EA5141B64 /* Build configuration list for PBXNativeTarget "ShareExtension" */;
+			buildPhases = (
+				96618F904B4DB813B3FE654B,
+A4C5B22E2A6FF27A03B20485,
+3FA9413E627CDEAFB776DB8D,
+			);
+			buildRules = (
+			);
+			dependencies = (
+
+			);
+			name = ShareExtension;
+			productName = ShareExtension;
+			productReference = 0993950173A9FE2E64489F86;
+			productType = "com.apple.product-type.app-extension";
+		};
+		AB4456F61406B28ECD067220 /* ShanNianAITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 781C6A3F9ECD99A5AB91E05C /* Build configuration list for PBXNativeTarget "ShanNianAITests" */;
+			buildPhases = (
+				B231B40F0675AEC3C01C012E,
+BE8AB9EF28A89D1A71B1B9B1,
+92D20A046D234EF09E112089,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E7FD9EA47BC779E46DBB66A7,
+			);
+			name = ShanNianAITests;
+			productName = ShanNianAITests;
+			productReference = 0C6AB4133E23CED769115FDB;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		/* End PBXNativeTarget section */
+
+		/* Begin PBXProject section */
+		8A338977421CDBDAB79BCCA1 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+			};
+			buildConfigurationList = 35E3DC2A5B87DE5B953515DA /* Build configuration list for PBXProject "ShanNianAI" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+				"zh-Hans",
+			);
+			mainGroup = 223D54610AC47CE2E71DDC0D;
+			productRefGroup = 223D54610AC47CE2E71DDC0D;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				81D9B9E9A116DE9C8CD44C51 /* ShanNianAI */,
+				84280DD8D515249BB7A20EF8 /* WidgetExtension */,
+				6E32B8AEEC93D003B43F0C20 /* ShareExtension */,
+				AB4456F61406B28ECD067220 /* ShanNianAITests */,
+			);
+		};
+		/* End PBXProject section */
+
+		/* Begin PBXSourcesBuildPhase section */
+		9E1B6ECC8374DD95EE6FFC19 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E3E713E9FF47B2FF570F509D /* ShanNianAIApp.swift in Sources */,
+				6ADB893F7DE3ABDC1A7FE9A3 /* Note.swift in Sources */,
+				32654E6E9A47211E79053FAD /* NoteCategory.swift in Sources */,
+				6FC59CD3DD9EE57CDE37972B /* NoteStore.swift in Sources */,
+				F40813C69264CD6001D530D2 /* AIService.swift in Sources */,
+				FA5A7DD8B6DFF3EE0A75E5F9 /* AppIntents.swift in Sources */,
+				083DBEA2793D05CA090BE47E /* DataExporter.swift in Sources */,
+				1719D085E00C6D7338C7162F /* HapticManager.swift in Sources */,
+				7CC6A4578D7BC92F24317DF7 /* NotificationManager.swift in Sources */,
+				F9DE7A1BAC6BA78DB651CC92 /* SpeechRecognizer.swift in Sources */,
+				4B8B8FB37E8815B715B0E5B8 /* StoreManager.swift in Sources */,
+				965FE849E02C3F56B9AF13BA /* CaptureView.swift in Sources */,
+				946E716FEDDD90CA9DFDEA18 /* ContentView.swift in Sources */,
+				2604F2DCB76DD59B18206B12 /* InsightsView.swift in Sources */,
+				1845D30BEA559B75DB9BA92D /* NoteDetailView.swift in Sources */,
+				15AEE98FA739D48BC8C2CC1C /* NoteListView.swift in Sources */,
+				EEF626555E1E61787913B0D7 /* OnboardingView.swift in Sources */,
+				415886B4C2105467723E17A8 /* ProSubscriptionView.swift in Sources */,
+				7E97F03890A93D2BE537FE8D /* SettingsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		404ABC7A33E2C9964953EC40 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CD7BF704C1205746772F3F07 /* ShanNianWidget.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		96618F904B4DB813B3FE654B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2865AA9548FD1187FCF40761 /* ShareViewController.swift in Sources */,
+				A387B585175D514EF9EC4709 /* Note.swift in Sources */,
+				107825163A0FEA4E907B424D /* NoteCategory.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B231B40F0675AEC3C01C012E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EBC808CA166472BED65A2CDF /* AIServiceTests.swift in Sources */,
+				32FBDC5E4A255890F4ECBD52 /* NoteModelTests.swift in Sources */,
+				E26460E3A72BDEA7E770EDCA /* NoteStoreTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		/* End PBXSourcesBuildPhase section */
+
+		/* Begin PBXFrameworksBuildPhase section */
+		BDD0D003502A6B17656B8C08 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		A1BDD44B586B56A5F5EADF16 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		A4C5B22E2A6FF27A03B20485 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		BE8AB9EF28A89D1A71B1B9B1 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		/* End PBXFrameworksBuildPhase section */
+
+		/* Begin PBXResourcesBuildPhase section */
+		D5F59FE83A29E2721A203AB9 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		CD8EFB97319B106A0FFAEAD9 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		3FA9413E627CDEAFB776DB8D /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		92D20A046D234EF09E112089 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		/* End PBXResourcesBuildPhase section */
+
+		/* Begin PBXCopyFilesBuildPhase section */
+		BC74FFC702709BD680F678E7 /* Embed Frameworks */ = {isa = PBXCopyFilesBuildPhase; buildActionMask = 2147483647; dstPath = ""; dstSubfolderSpec = 10; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		/* End PBXCopyFilesBuildPhase section */
+
+		/* Begin PBXTargetDependency section */
+		E7FD9EA47BC779E46DBB66A7 /* PBXTargetDependency */ = {isa = PBXTargetDependency; target = 81D9B9E9A116DE9C8CD44C51 /* ShanNianAI */; targetProxy = 9DC75199E4169141ACA238CE /* PBXContainerItemProxy */; };
+		/* End PBXTargetDependency section */
+
+		/* Begin PBXContainerItemProxy section */
+		9DC75199E4169141ACA238CE /* PBXContainerItemProxy */ = {isa = PBXContainerItemProxy; containerPortal = 8A338977421CDBDAB79BCCA1 /* Project object */; proxyType = 1; remoteGlobalIDString = 81D9B9E9A116DE9C8CD44C51; remoteInfo = ShanNianAI; };
+		/* End PBXContainerItemProxy section */
+
+		/* Begin XCBuildConfiguration section */
+		6AFC074EBF3ECAF80434065B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		615FB698B6B9EB64A0203D8A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Release;
+		};
+		9C793BE9101B3B9157ECAE1C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_TESTABILITY = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Sources/ShanNianAI/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shanian.flashai;
+				PRODUCT_NAME = ShanNianAI;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		00B8A69251F0322D173FA2BD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Sources/ShanNianAI/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shanian.flashai;
+				PRODUCT_NAME = ShanNianAI;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		E805A79898FC27A6A138AC05 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Sources/WidgetExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shanian.flashai.widget;
+				PRODUCT_NAME = WidgetExtension;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		827F8107304529F3CC32D78B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Sources/WidgetExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shanian.flashai.widget;
+				PRODUCT_NAME = WidgetExtension;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		EEB8F9F7D3EF32D50DEF0C88 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Sources/ShareExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shanian.flashai.share;
+				PRODUCT_NAME = ShareExtension;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		6645568EF4C30D5DAFA74399 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Sources/ShareExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shanian.flashai.share;
+				PRODUCT_NAME = ShareExtension;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		242FEE4F5C5A1FA32FF01BFC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Tests/ShanNianAITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shanian.flashai.tests;
+				PRODUCT_NAME = ShanNianAITests;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 5.9;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ShanNianAI.app/ShanNianAI";
+			};
+			name = Debug;
+		};
+		38A9A0572375CDA8A6F55F7C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Tests/ShanNianAITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shanian.flashai.tests;
+				PRODUCT_NAME = ShanNianAITests;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 5.9;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ShanNianAI.app/ShanNianAI";
+			};
+			name = Release;
+		};
+		/* End XCBuildConfiguration section */
+
+		/* Begin XCConfigurationList section */
+		35E3DC2A5B87DE5B953515DA /* Build configuration list for PBXProject "ShanNianAI" */ = {isa = XCConfigurationList; buildConfigurations = (6AFC074EBF3ECAF80434065B /* Debug */, 615FB698B6B9EB64A0203D8A /* Release */); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		7E4D6FBD74BE16A19E315343 /* Build configuration list for PBXNativeTarget "ShanNianAI" */ = {isa = XCConfigurationList; buildConfigurations = (9C793BE9101B3B9157ECAE1C /* Debug */, 00B8A69251F0322D173FA2BD /* Release */); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		B2EBE03947DBD44D2E0E8C6E /* Build configuration list for PBXNativeTarget "WidgetExtension" */ = {isa = XCConfigurationList; buildConfigurations = (E805A79898FC27A6A138AC05 /* Debug */, 827F8107304529F3CC32D78B /* Release */); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		6EA74CFE8C71400EA5141B64 /* Build configuration list for PBXNativeTarget "ShareExtension" */ = {isa = XCConfigurationList; buildConfigurations = (EEB8F9F7D3EF32D50DEF0C88 /* Debug */, 6645568EF4C30D5DAFA74399 /* Release */); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		781C6A3F9ECD99A5AB91E05C /* Build configuration list for PBXNativeTarget "ShanNianAITests" */ = {isa = XCConfigurationList; buildConfigurations = (242FEE4F5C5A1FA32FF01BFC /* Debug */, 38A9A0572375CDA8A6F55F7C /* Release */); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		/* End XCConfigurationList section */
+
+	};
+	rootObject = 8A338977421CDBDAB79BCCA1 /* Project object */;
+}

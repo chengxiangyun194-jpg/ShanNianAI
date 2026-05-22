@@ -1,0 +1,85 @@
+import Foundation
+import SwiftUI
+import SwiftData
+
+enum NoteCategory: String, Codable, CaseIterable {
+    case inspiration = "灵感"
+    case todo = "待办"
+    case bookmark = "收藏"
+    case journal = "日记"
+    case idea = "创意"
+    case question = "问题"
+    case learning = "学习"
+    case uncategorized = "未分类"
+
+    var color: Color {
+        switch self {
+        case .inspiration: return .yellow
+        case .todo: return .blue
+        case .bookmark: return .green
+        case .journal: return .purple
+        case .idea: return .orange
+        case .question: return .red
+        case .learning: return .teal
+        case .uncategorized: return .gray
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .inspiration: return "sparkles"
+        case .todo: return "checklist"
+        case .bookmark: return "bookmark"
+        case .journal: return "book"
+        case .idea: return "lightbulb"
+        case .question: return "questionmark.circle"
+        case .learning: return "graduationcap"
+        case .uncategorized: return "folder"
+        }
+    }
+}
+
+
+@Model
+final class Note {
+    var id: UUID = UUID()
+    var content: String = ""
+    var category: NoteCategory = NoteCategory.uncategorized
+    var tags: [String] = []
+    var aiSummary: String?
+    var aiInsight: String?
+    var relatedNoteIDs: [UUID] = []
+    var createdAt: Date = Date()
+    var modifiedAt: Date = Date()
+    var reviewedAt: Date? = nil
+    var reviewCount: Int = 0
+    var isFavorite: Bool = false
+    var isArchived: Bool = false
+    var isPinned: Bool = false
+
+    init(
+        content: String,
+        category: NoteCategory = .uncategorized,
+        tags: [String] = [],
+        aiSummary: String? = nil,
+        aiInsight: String? = nil
+    ) {
+        self.id = UUID()
+        self.content = content
+        self.category = category
+        self.tags = tags
+        self.aiSummary = aiSummary
+        self.aiInsight = aiInsight
+        self.relatedNoteIDs = []
+        let now = Date()
+        self.createdAt = now
+        self.modifiedAt = now
+        self.reviewedAt = nil
+        self.reviewCount = 0
+        self.isFavorite = false
+        self.isArchived = false
+        self.isPinned = false
+    }
+}
+
+

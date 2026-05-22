@@ -9,99 +9,170 @@ struct NoteDetailView: View {
     @State private var showDeleteConfirm = false
     @State private var appeared = false
 
+    // 灵感分析
+    @State private var isAnalyzing = false
+    @State private var analysis: InspirationAnalysis?
+    @State private var showAnalysis = false
+    @State private var analysisError: String?
+
+    // 分享
+    @State private var shareImage: UIImage?
+    @State private var showShareSheet = false
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                // Category badge + actions
+                // Category badge + editable + actions
                 HStack(spacing: 8) {
-                    Label(note.category.rawValue, systemImage: note.category.icon)
-                        .font(.subheadline.bold())
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 6)
-                        .background(
-                            RoundedRectangle(cornerRadius: 10)
-                                .fill(note.category.color.opacity(0.15))
-                        )
-                        .foregroundColor(note.category.color)
-
-                    if note.isFavorite {
-                        Image(systemName: "star.fill")
-                            .foregroundColor(.yellow)
+                    Menu {
+                        ForEach(NoteCategory.allCases, id: \.self) { cat in
+                            Button {
+                                HapticManager.light()
+                                note.category = cat
+                                note.modifiedAt = Date()
+                            } label: {
+                                Label(cat.rawValue, systemImage: note.category == cat ? "checkmark" : cat.icon)
+                            }
+                        }
+                    } label: {
+                        Label(note.category.rawValue, systemImage: note.category.icon)
+                            .font(.subheadline.bold())
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 6)
+                            .background(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .fill(note.category.color.opacity(0.15))
+                            )
+                            .foregroundColor(note.category.color)
                     }
 
+                    if note.isFavorite {
+                        Image(systemName: "star.fill").foregroundColor(.yellow)
+                    }
                     if note.isPinned {
-                        Image(systemName: "pin.fill")
-                            .foregroundColor(.blue)
+                        Image(systemName: "pin.fill").foregroundColor(.blue)
                     }
 
                     Spacer()
 
-                    // Quick action buttons
                     Button {
                         HapticManager.light()
                         noteStore.togglePin(note)
                     } label: {
                         Image(systemName: note.isPinned ? "pin.slash" : "pin")
-                            .font(.title3)
-                            .foregroundColor(.blue)
+                            .font(.title3).foregroundColor(.blue)
                     }
-                    .accessibilityLabel(note.isPinned ? "取消置顶" : "置顶")
 
                     Button {
                         HapticManager.light()
                         noteStore.toggleFavorite(note)
                     } label: {
                         Image(systemName: note.isFavorite ? "star.fill" : "star")
-                            .font(.title3)
-                            .foregroundColor(.yellow)
+                            .font(.title3).foregroundColor(.yellow)
                     }
-                    .accessibilityLabel(note.isFavorite ? "取消收藏" : "收藏")
                 }
 
-                // Content with markdown rendering
+                // Content
                 if isEditing {
                     TextEditor(text: $editedContent)
                         .font(.body)
                         .frame(minHeight: 200)
                         .padding(12)
-                        .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(Color(.systemGray6))
-                        )
+                        .background(RoundedRectangle(cornerRadius: 12).fill(Color(.systemGray6)))
                 } else {
-                    MarkdownText(note.content)
+                    MarkdownText(text: note.content)
                         .opacity(appeared ? 1 : 0)
                         .offset(y: appeared ? 0 : 10)
                 }
 
                 // AI Summary
                 if let summary = note.aiSummary {
-                    aiBox(
-                        icon: "sparkles",
-                        title: "AI 摘要",
-                        color: .purple
-                    ) {
-                        Text(summary)
-                            .font(.subheadline)
+                    aiBox(icon: "sparkles", title: "AI 摘要", color: .purple) {
+                        Text(summary).font(.subheadline)
+                    }
+                }
+
+                // 灵感分析按钮
+                if note.category == .inspiration {
+                    VStack(spacing: 10) {
+                        if isAnalyzing {
+                            HStack {
+                                ProgressView()
+                                Text("AI 深度分析中...")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 16)
+                            .background(
+                                RoundedRectangle(cornerRadius: 14)
+                                    .fill(Color.orange.opacity(0.08))
+                            )
+                        } else if let err = analysisError {
+                            VStack(spacing: 8) {
+                                HStack {
+                                    Image(systemName: "exclamationmark.triangle.fill")
+                                        .foregroundColor(.orange)
+                                    Text("分析失败")
+                                        .font(.subheadline.bold())
+                                        .foregroundColor(.orange)
+                                }
+                                Text(err)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                    .multilineTextAlignment(.center)
+                                Button("重试") {
+                                    analysisError = nil
+                                    performAnalysis()
+                                }
+                                .font(.caption)
+                                .buttonStyle(.bordered)
+                                .tint(.orange)
+                            }
+                            .padding(14)
+                            .frame(maxWidth: .infinity)
+                            .background(
+                                RoundedRectangle(cornerRadius: 14)
+                                    .fill(Color.orange.opacity(0.06))
+                            )
+                        } else if !showAnalysis {
+                            Button {
+                                HapticManager.medium()
+                                performAnalysis()
+                            } label: {
+                                Label("灵感深度分析", systemImage: "brain.head.profile")
+                                    .font(.subheadline.bold())
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 14)
+                                    .background(
+                                        LinearGradient(
+                                            colors: [.orange, .pink],
+                                            startPoint: .leading,
+                                            endPoint: .trailing
+                                        )
+                                    )
+                                    .foregroundColor(.white)
+                                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                            }
+                        }
+
+                        // 分析结果
+                        if let a = analysis, showAnalysis {
+                            inspirationAnalysisCard(a)
+                        }
                     }
                 }
 
                 // Tags
                 if !note.tags.isEmpty {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("标签")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                        Text("标签").font(.caption).foregroundColor(.secondary)
                         FlowLayout(spacing: 6) {
                             ForEach(note.tags, id: \.self) { tag in
                                 Text("#\(tag)")
                                     .font(.caption)
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 6)
-                                    .background(
-                                        Capsule()
-                                            .fill(Color(.systemGray5))
-                                    )
+                                    .padding(.horizontal, 12).padding(.vertical, 6)
+                                    .background(Capsule().fill(Color(.systemGray5)))
                             }
                         }
                     }
@@ -111,214 +182,373 @@ struct NoteDetailView: View {
                 if !note.relatedNoteIDs.isEmpty {
                     VStack(alignment: .leading, spacing: 8) {
                         Button {
-                            withAnimation(.easeInOut(duration: 0.2)) {
-                                showRelatedNotes.toggle()
-                            }
+                            withAnimation { showRelatedNotes.toggle() }
                         } label: {
                             HStack {
-                                Image(systemName: "link")
-                                    .foregroundColor(.orange)
-                                Text("关联笔记 (\(note.relatedNoteIDs.count))")
-                                    .font(.subheadline)
+                                Image(systemName: "link").foregroundColor(.orange)
+                                Text("关联笔记 (\(note.relatedNoteIDs.count))").font(.subheadline)
                                 Spacer()
                                 Image(systemName: showRelatedNotes ? "chevron.up" : "chevron.down")
-                                    .font(.caption)
+                                    .font(.caption).foregroundColor(.secondary)
                             }
-                            .foregroundColor(.primary)
                         }
-
                         if showRelatedNotes {
-                            let relatedNotes = noteStore.notes.filter { note.relatedNoteIDs.contains($0.id) }
-                            ForEach(relatedNotes) { related in
-                                NavigationLink(destination: NoteDetailView(note: related)) {
-                                    NoteRowView(note: related)
+                            ForEach(note.relatedNoteIDs, id: \.self) { id in
+                                if let related = noteStore.notes.first(where: { $0.id == id }) {
+                                    NavigationLink {
+                                        NoteDetailView(note: related)
+                                    } label: {
+                                        HStack {
+                                            Image(systemName: related.category.icon)
+                                                .foregroundColor(related.category.color)
+                                            Text(related.content.prefix(50))
+                                                .font(.caption).lineLimit(1)
+                                            Spacer()
+                                            Image(systemName: "chevron.right").font(.caption2)
+                                        }
                                         .padding(10)
-                                        .background(
-                                            RoundedRectangle(cornerRadius: 10)
-                                                .fill(Color(.systemGray6))
-                                        )
+                                        .background(RoundedRectangle(cornerRadius: 8).fill(Color(.systemGray6)))
+                                    }
                                 }
-                                .buttonStyle(.plain)
-                                .transition(.opacity.combined(with: .move(edge: .top)))
                             }
                         }
                     }
                 }
 
-                // Metadata
-                VStack(alignment: .leading, spacing: 4) {
-                    LabeledContent("创建时间", value: note.createdAt.formatted(date: .long, time: .shortened))
-                    LabeledContent("修改时间", value: note.modifiedAt.formatted(date: .long, time: .shortened))
-                    if note.reviewCount > 0 {
-                        LabeledContent("回顾次数", value: "\(note.reviewCount) 次")
+                // Meta info
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack {
+                        Text("创建于 \(formatDate(note.createdAt))").font(.caption2).foregroundColor(.secondary)
+                        if note.reviewCount > 0 {
+                            Text("· 已回顾 \(note.reviewCount) 次").font(.caption2).foregroundColor(.orange)
+                        }
+                    }
+                    if note.modifiedAt > note.createdAt {
+                        Text("修改于 \(formatDate(note.modifiedAt))").font(.caption2).foregroundColor(.secondary)
                     }
                 }
-                .font(.caption)
-                .foregroundColor(.secondary)
-                .padding(.top, 8)
-            }
-            .padding()
-        }
-        .navigationTitle("笔记详情")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItemGroup(placement: .navigationBarTrailing) {
-                Button {
-                    noteStore.toggleFavorite(note)
-                } label: {
-                    Image(systemName: note.isFavorite ? "star.fill" : "star")
-                        .foregroundColor(.yellow)
-                }
 
-                Menu {
+                // Bottom actions
+                HStack(spacing: 16) {
+                    // Edit
                     Button {
-                        editedContent = note.content
-                        isEditing = true
+                        if isEditing {
+                            noteStore.updateNote(note, content: editedContent)
+                        } else {
+                            editedContent = note.content
+                        }
+                        withAnimation { isEditing.toggle() }
                     } label: {
-                        Label("编辑", systemImage: "pencil")
+                        Label(isEditing ? "保存" : "编辑", systemImage: isEditing ? "checkmark" : "pencil")
+                            .font(.subheadline)
                     }
+                    .buttonStyle(.bordered)
 
+                    // Review
                     Button {
-                        HapticManager.success()
+                        HapticManager.light()
                         noteStore.markReviewed(note)
                     } label: {
-                        Label("标记已回顾", systemImage: "checkmark.circle")
+                        Label("回顾", systemImage: "eye")
+                            .font(.subheadline)
                     }
+                    .buttonStyle(.bordered)
 
-                    Divider()
+                    Spacer()
 
+                    // Share button
+                    Button {
+                        HapticManager.light()
+                        generateShareImage()
+                    } label: {
+                        Label("分享", systemImage: "square.and.arrow.up")
+                            .font(.subheadline)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(.blue)
+
+                    // Delete
                     Button(role: .destructive) {
                         showDeleteConfirm = true
                     } label: {
-                        Label("删除", systemImage: "trash")
+                        Image(systemName: "trash").font(.subheadline)
                     }
-                } label: {
-                    Image(systemName: "ellipsis.circle")
+                    .buttonStyle(.bordered)
                 }
+                .padding(.top, 8)
             }
+            .padding(20)
         }
-        .onAppear {
-            withAnimation(.easeOut(duration: 0.3)) {
-                appeared = true
-            }
-        }
-        .sheet(isPresented: $isEditing) {
-            NavigationStack {
-                VStack {
-                    TextEditor(text: $editedContent)
-                        .font(.body)
-                        .padding()
-                }
-                .navigationTitle("编辑笔记")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("取消") { isEditing = false }
-                    }
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button("保存") {
-                            HapticManager.medium()
-                            noteStore.updateNote(note, content: editedContent)
-                            isEditing = false
-                        }
-                    }
-                }
+        .navigationTitle("笔记详情")
+        .navigationBarTitleDisplayMode(.inline)
+        .onAppear { withAnimation(.easeOut(duration: 0.3)) { appeared = true } }
+        .sheet(isPresented: $showShareSheet) {
+            if let img = shareImage {
+                ShareSheet(items: [img, "来自 一闪AI — \(note.content.prefix(30))..."])
             }
         }
         .alert("确认删除", isPresented: $showDeleteConfirm) {
             Button("取消", role: .cancel) {}
             Button("删除", role: .destructive) {
-                HapticManager.warning()
                 noteStore.deleteNote(note)
             }
-        } message: {
-            Text("删除后无法恢复")
         }
     }
 
-    private func aiBox(
-        icon: String,
-        title: String,
-        color: Color,
-        @ViewBuilder content: () -> some View
-    ) -> some View {
+    // MARK: - Analysis
+
+    private func performAnalysis() {
+        isAnalyzing = true
+        analysisError = nil
+        Task {
+            do {
+                let result = try await AIService.shared.analyzeInspiration(note)
+                analysis = result
+                withAnimation(.easeInOut(duration: 0.4)) { showAnalysis = true }
+            } catch {
+                analysisError = error.localizedDescription
+            }
+            isAnalyzing = false
+        }
+    }
+
+    // MARK: - Share
+
+    private func generateShareImage() {
+        // 直接分享文本 + 图片（异步生成不阻塞 UI）
+        let text = shareText
+        shareImage = nil
+        showShareSheet = true
+
+        // 异步生成分享卡片
+        Task.detached(priority: .background) {
+            let renderer = await MainActor.run {
+                ImageRenderer(content: shareCardView)
+            }
+            if let img = renderer.uiImage {
+                await MainActor.run {
+                    shareImage = img
+                }
+            }
+        }
+    }
+
+    private var shareText: String {
+        var text = "一闪AI 灵感笔记\n\n"
+        text += "【\(note.category.rawValue)】\n"
+        text += note.content + "\n"
+        if let s = note.aiSummary { text += "\nAI 摘要：\(s)" }
+        if !note.tags.isEmpty { text += "\n标签：\(note.tags.map { "#\($0)" }.joined(separator: " "))" }
+        return text
+    }
+
+    private var shareCardView: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            // Header
+            HStack {
+                Label("一闪AI", systemImage: "sparkles")
+                    .font(.title3.bold())
+                    .foregroundStyle(
+                        LinearGradient(colors: [.orange, .pink], startPoint: .leading, endPoint: .trailing)
+                    )
+                Spacer()
+                Text(formatDate(note.createdAt))
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+
+            Divider()
+
+            // Category
+            HStack {
+                Image(systemName: note.category.icon)
+                    .foregroundColor(note.category.color)
+                Text(note.category.rawValue)
+                    .font(.subheadline.bold())
+                    .foregroundColor(note.category.color)
+                if !note.tags.isEmpty {
+                    Text(note.tags.prefix(3).map { "#\($0)" }.joined(separator: " "))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+
+            // Content
+            Text(note.content)
+                .font(.body)
+                .lineLimit(8)
+
+            // AI summary
+            if let summary = note.aiSummary {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("AI 摘要").font(.caption.bold()).foregroundColor(.purple)
+                    Text(summary).font(.subheadline).foregroundColor(.secondary)
+                }
+                .padding(12)
+                .background(
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color.purple.opacity(0.06))
+                )
+            }
+
+            Divider()
+
+            // Footer
+            HStack {
+                Text("来自 一闪AI").font(.caption).foregroundColor(.secondary)
+                Spacer()
+                Text("抓住每个闪念").font(.caption2).foregroundColor(.secondary.opacity(0.6))
+            }
+        }
+        .padding(24)
+        .frame(width: 360)
+        .background(Color(.systemBackground))
+    }
+
+    // MARK: - Inspiration Analysis Card
+
+    private func inspirationAnalysisCard(_ a: InspirationAnalysis) -> some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack {
+                Image(systemName: "brain.head.profile")
+                    .foregroundColor(.orange)
+                Text("灵感深度分析")
+                    .font(.headline)
+                Spacer()
+                Button {
+                    withAnimation { showAnalysis = false; analysis = nil }
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundColor(.secondary)
+                }
+            }
+
+            // 核心洞察
+            VStack(alignment: .leading, spacing: 6) {
+                Text("💡 核心洞察").font(.subheadline.bold())
+                Text(a.coreInsight)
+                    .font(.body)
+                    .padding(10)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.orange.opacity(0.08))
+                    )
+            }
+
+            // 创意延伸
+            VStack(alignment: .leading, spacing: 6) {
+                Text("🚀 创意延伸").font(.subheadline.bold())
+                ForEach(Array(a.extensions.enumerated()), id: \.offset) { i, ext in
+                    HStack(alignment: .top, spacing: 8) {
+                        Text("\(i + 1).").font(.caption).foregroundColor(.orange)
+                        Text(ext).font(.subheadline)
+                    }
+                }
+            }
+
+            // 实践建议
+            VStack(alignment: .leading, spacing: 6) {
+                Text("🎯 实践建议").font(.subheadline.bold())
+                ForEach(Array(a.suggestions.enumerated()), id: \.offset) { i, s in
+                    HStack(alignment: .top, spacing: 8) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.caption).foregroundColor(.green)
+                        Text(s).font(.subheadline)
+                    }
+                }
+            }
+
+            // 相关领域
+            if !a.relatedFields.isEmpty {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("🔗 相关领域").font(.subheadline.bold())
+                    FlowLayout(spacing: 6) {
+                        ForEach(a.relatedFields, id: \.self) { field in
+                            Text(field)
+                                .font(.caption)
+                                .padding(.horizontal, 10).padding(.vertical, 4)
+                                .background(
+                                    Capsule()
+                                        .fill(Color.blue.opacity(0.1))
+                                )
+                                .foregroundColor(.blue)
+                        }
+                    }
+                }
+            }
+        }
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color(.systemGray6).opacity(0.5))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(Color.orange.opacity(0.2), lineWidth: 1)
+        )
+    }
+
+    // MARK: - Helpers
+
+    private func aiBox<Content: View>(icon: String, title: String, color: Color, @ViewBuilder content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Label(title, systemImage: icon)
                 .font(.caption.bold())
                 .foregroundColor(color)
             content()
         }
-        .padding()
+        .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 14)
                 .fill(color.opacity(0.06))
         )
-        .overlay(
-            RoundedRectangle(cornerRadius: 14)
-                .stroke(color.opacity(0.15), lineWidth: 1)
-        )
+    }
+
+    private func formatDate(_ date: Date) -> String {
+        let f = DateFormatter()
+        f.dateFormat = "yyyy-MM-dd HH:mm"
+        return f.string(from: date)
     }
 }
 
-// MARK: - Markdown Text Renderer
+// MARK: - Markdown Renderer
 
 struct MarkdownText: View {
     let text: String
 
-    init(_ text: String) {
-        self.text = text
-    }
-
     var body: some View {
-        let blocks = parseMarkdown(text)
-
         VStack(alignment: .leading, spacing: 8) {
-            ForEach(Array(blocks.enumerated()), id: \.offset) { _, block in
+            ForEach(Array(parseMarkdown(text).enumerated()), id: \.offset) { _, block in
                 switch block {
                 case .heading(let content, let level):
                     Text(content)
                         .font(headingFont(level))
                         .fontWeight(.bold)
-                        .foregroundColor(.primary)
                         .padding(.top, level <= 2 ? 12 : 4)
-
                 case .paragraph(let content):
-                    Text(content)
-                        .font(.body)
-                        .lineSpacing(4)
-
-                case .bold(let content):
-                    Text(content).bold()
-                        + Text(parseInline(text: content).1)
-
+                    Text(content).font(.body)
                 case .bullet(let content):
-                    HStack(alignment: .top, spacing: 6) {
-                        Text("•")
-                            .foregroundColor(.secondary)
-                        Text(content)
-                            .font(.body)
+                    HStack(alignment: .top, spacing: 8) {
+                        Text("•").foregroundColor(.secondary)
+                        Text(content).font(.body)
                     }
-                    .padding(.leading, 8)
-
-                case .numbered(let index, let content):
-                    HStack(alignment: .top, spacing: 6) {
-                        Text("\(index).")
-                            .foregroundColor(.secondary)
-                        Text(content)
-                            .font(.body)
+                case .numbered(let num, let content):
+                    HStack(alignment: .top, spacing: 8) {
+                        Text("\(num).").foregroundColor(.secondary)
+                        Text(content).font(.body)
                     }
-                    .padding(.leading, 8)
-
                 case .codeBlock(let content):
-                    Text(content)
-                        .font(.caption.monospaced())
-                        .padding(10)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(Color(.systemGray6))
-                        )
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        Text(content)
+                            .font(.caption.monospaced())
+                            .padding(12)
+                    }
+                    .background(
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color(.systemGray6))
+                    )
                 }
             }
         }
@@ -332,18 +562,13 @@ struct MarkdownText: View {
         default: return .headline
         }
     }
-
-    private func parseInline(text: String) -> (String, String) {
-        return (text, "")
-    }
 }
 
-// MARK: - Markdown Block Types
+// MARK: - Markdown Parser
 
 enum MarkdownBlock {
-    case heading(String, Int)      // content, level (1-6)
+    case heading(String, Int)
     case paragraph(String)
-    case bold(String)
     case bullet(String)
     case numbered(Int, String)
     case codeBlock(String)
@@ -355,7 +580,6 @@ func parseMarkdown(_ text: String) -> [MarkdownBlock] {
     var codeBlockBuffer = ""
     var inCodeBlock = false
     var currentParagraph = ""
-    var numberIndex = 1
 
     func flushParagraph() {
         let trimmed = currentParagraph.trimmingCharacters(in: .whitespaces)
@@ -368,7 +592,6 @@ func parseMarkdown(_ text: String) -> [MarkdownBlock] {
     for line in lines {
         let trimmed = line.trimmingCharacters(in: .whitespaces)
 
-        // Code block fences
         if trimmed.hasPrefix("```") {
             if inCodeBlock {
                 if !codeBlockBuffer.isEmpty {
@@ -388,7 +611,6 @@ func parseMarkdown(_ text: String) -> [MarkdownBlock] {
             continue
         }
 
-        // Headings
         if trimmed.hasPrefix("#### ") {
             flushParagraph()
             blocks.append(.heading(String(trimmed.dropFirst(5)), 4))
@@ -401,36 +623,26 @@ func parseMarkdown(_ text: String) -> [MarkdownBlock] {
         } else if trimmed.hasPrefix("# ") {
             flushParagraph()
             blocks.append(.heading(String(trimmed.dropFirst(2)), 1))
-        }
-        // Bullet list
-        else if trimmed.hasPrefix("- ") || trimmed.hasPrefix("* ") {
+        } else if trimmed.hasPrefix("- ") || trimmed.hasPrefix("* ") {
             flushParagraph()
             blocks.append(.bullet(String(trimmed.dropFirst(2))))
-        }
-        // Numbered list
-        else if let match = try? Regex("^(\\d+)\\.\\s(.+)").wholeMatch(in: trimmed) {
+        } else if let match = try? Regex("^(\\d+)\\.\\s(.+)").wholeMatch(in: trimmed) {
             flushParagraph()
             if let numStr = match[1].substring, let num = Int(numStr) {
                 blocks.append(.numbered(num, String(match[2].substring ?? "")))
             }
-        }
-        // Empty line = paragraph break
-        else if trimmed.isEmpty {
+        } else if trimmed.isEmpty {
             flushParagraph()
-        }
-        // Regular text
-        else {
+        } else {
             if !currentParagraph.isEmpty { currentParagraph += "\n" }
             currentParagraph += line
         }
     }
 
-    // Flush remaining code block
     if inCodeBlock && !codeBlockBuffer.isEmpty {
         blocks.append(.codeBlock(codeBlockBuffer))
     }
 
-    // Flush remaining paragraph
     flushParagraph()
 
     return blocks

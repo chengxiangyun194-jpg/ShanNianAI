@@ -10,20 +10,10 @@ final class AIServiceTests: XCTestCase {
         service = AIService.shared
     }
 
-    override func tearDown() {
-        UserDefaults.standard.removeObject(forKey: "openai_api_key")
-        super.tearDown()
-    }
-
     // MARK: - Configuration
 
-    func testIsNotConfiguredWithoutAPIKey() {
-        UserDefaults.standard.removeObject(forKey: "openai_api_key")
-        XCTAssertFalse(service.isConfigured)
-    }
-
-    func testIsConfiguredWithAPIKey() {
-        UserDefaults.standard.set("sk-test123", forKey: "openai_api_key")
+    func testServiceIsAlwaysConfigured() {
+        // 服务端代理模式下，App 端无需 API Key，始终可用
         XCTAssertTrue(service.isConfigured)
     }
 
@@ -50,7 +40,6 @@ final class AIServiceTests: XCTestCase {
     }
 
     func testParseClassificationWithMarkdownWrapper() {
-        // AI sometimes wraps JSON in markdown code blocks
         let json = """
         ```json
         {
@@ -62,7 +51,6 @@ final class AIServiceTests: XCTestCase {
         ```
         """
 
-        // This tests the cleanJSON logic indirectly
         let cleaned = json
             .replacingOccurrences(of: "```json", with: "")
             .replacingOccurrences(of: "```", with: "")
@@ -155,12 +143,10 @@ final class AIServiceTests: XCTestCase {
         XCTAssertNotNil(error.localizedDescription)
     }
 
-    // MARK: - GPT-4.1-mini
+    // MARK: - Model Config
 
-    func testModelNameIsCorrect() {
-        // Model is private, test via classification requiring API key
-        // This just ensures the model name constant is valid format
-        UserDefaults.standard.set("sk-test", forKey: "openai_api_key")
+    func testServiceIsConfiguredByDefault() {
+        // 服务端代理模式，App 无需配置即可用
         XCTAssertTrue(service.isConfigured)
     }
 }

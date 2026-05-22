@@ -1,0 +1,778 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A85D6A174C3EF13830D6E61D /* ShanNianAIApp.swift */ = {isa = PBXBuildFile; fileRef = 9A27EB420D94D97567A247E0 /* 9A27EB420D94D97567A247E0 */; };
+		8D669A7D607B462CE97572C7 /* Note.swift */ = {isa = PBXBuildFile; fileRef = 41EFFFBBCAABB72518A8946A /* 41EFFFBBCAABB72518A8946A */; };
+		45D83684CB666FEB675A3AC7 /* NoteCategory.swift */ = {isa = PBXBuildFile; fileRef = 25E52A2CFAA97B64C6E940B9 /* 25E52A2CFAA97B64C6E940B9 */; };
+		5B76331778AC751040D20D02 /* NoteStore.swift */ = {isa = PBXBuildFile; fileRef = 9CCDEFE0FD31BBEE0A5035A5 /* 9CCDEFE0FD31BBEE0A5035A5 */; };
+		952A9C271BE6E03C68DE3F97 /* AIService.swift */ = {isa = PBXBuildFile; fileRef = 239B0A369F3001524BB8793F /* 239B0A369F3001524BB8793F */; };
+		E1DF30FBF73D7374666BADA1 /* AppIntents.swift */ = {isa = PBXBuildFile; fileRef = F3D4592694C584DCCAACF5C2 /* F3D4592694C584DCCAACF5C2 */; };
+		3669849819DDCA0ACADD6943 /* DataExporter.swift */ = {isa = PBXBuildFile; fileRef = 4D2E9DB10F1F69546897ACCC /* 4D2E9DB10F1F69546897ACCC */; };
+		A7D3EB6B1722BDCEC6637E9A /* HapticManager.swift */ = {isa = PBXBuildFile; fileRef = 496686DB83A3BBC6377902BC /* 496686DB83A3BBC6377902BC */; };
+		F3C6D8041EA9FEA5356EB05F /* NotificationManager.swift */ = {isa = PBXBuildFile; fileRef = 8864A6BEBED1AE3B24E17010 /* 8864A6BEBED1AE3B24E17010 */; };
+		FF01AD0629B76EBED4BC059E /* SpeechRecognizer.swift */ = {isa = PBXBuildFile; fileRef = 61FE79030EBDC023A3C29A07 /* 61FE79030EBDC023A3C29A07 */; };
+		AD8C1FEA84279EA997E33782 /* StoreManager.swift */ = {isa = PBXBuildFile; fileRef = 2B291510E3E939B7CC4060AE /* 2B291510E3E939B7CC4060AE */; };
+		5A7A77E4ABCFB09627EB039A /* CaptureView.swift */ = {isa = PBXBuildFile; fileRef = EF3C2F0B891FF79079F66D91 /* EF3C2F0B891FF79079F66D91 */; };
+		5FDD29453709FEAAF8A8C36D /* ContentView.swift */ = {isa = PBXBuildFile; fileRef = AB58BCD0E5AE81930F89BBEF /* AB58BCD0E5AE81930F89BBEF */; };
+		76904D9A6CC3B5D4D418C168 /* InsightsView.swift */ = {isa = PBXBuildFile; fileRef = A4286A0FFAA004AFBBA59AC4 /* A4286A0FFAA004AFBBA59AC4 */; };
+		0741EC852A2817BECC218A20 /* NoteDetailView.swift */ = {isa = PBXBuildFile; fileRef = 0D14641E886500D79F19C3CA /* 0D14641E886500D79F19C3CA */; };
+		DA5C2CAF823945856A3B60C7 /* NoteListView.swift */ = {isa = PBXBuildFile; fileRef = 861B2D06ED901B6C9BD49EA5 /* 861B2D06ED901B6C9BD49EA5 */; };
+		6BECB0D3377F6E98909DA320 /* OnboardingView.swift */ = {isa = PBXBuildFile; fileRef = 4AF65373DF7D810C7928E3A4 /* 4AF65373DF7D810C7928E3A4 */; };
+		395F5B27DFB5C4386CFBB6AD /* ProSubscriptionView.swift */ = {isa = PBXBuildFile; fileRef = B10F876625E4355496B42E3C /* B10F876625E4355496B42E3C */; };
+		2655C0EE43917049959C7FAA /* SettingsView.swift */ = {isa = PBXBuildFile; fileRef = 81077C13CE6E09AB3C7F6A0C /* 81077C13CE6E09AB3C7F6A0C */; };
+		E0C6C36BDC87C3DE08332F6F /* ShanNianWidget.swift */ = {isa = PBXBuildFile; fileRef = 33589E470CD5EC321905DC42 /* 33589E470CD5EC321905DC42 */; };
+		34B04FAB39EB61D4243A1395 /* ShareViewController.swift */ = {isa = PBXBuildFile; fileRef = A795024E3802294BDCBFECB9 /* A795024E3802294BDCBFECB9 */; };
+		F8F0C26940D625C3DEB7C13D /* Note.swift */ = {isa = PBXBuildFile; fileRef = 41EFFFBBCAABB72518A8946A /* 41EFFFBBCAABB72518A8946A */; };
+		36752B5040F79B17FA1366FF /* NoteCategory.swift */ = {isa = PBXBuildFile; fileRef = 25E52A2CFAA97B64C6E940B9 /* 25E52A2CFAA97B64C6E940B9 */; };
+		553488F4E43C399C3E505CE3 /* AIServiceTests.swift */ = {isa = PBXBuildFile; fileRef = C1FB3D6E8C804694E969E9F3 /* C1FB3D6E8C804694E969E9F3 */; };
+		7D10286B4535E54EA0994202 /* NoteModelTests.swift */ = {isa = PBXBuildFile; fileRef = 8B855158F7F0355A9DB29FE0 /* 8B855158F7F0355A9DB29FE0 */; };
+		4D5D9F7A8DCB53E666FA2B09 /* NoteStoreTests.swift */ = {isa = PBXBuildFile; fileRef = DD4ECDD2F0A619A23D912E53 /* DD4ECDD2F0A619A23D912E53 */; };
+		BA6C534C9A9337C6170A9529 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = FF48B0C44398299744EB4B6F /* FF48B0C44398299744EB4B6F */; };
+		4A242C93B304A8C6445DEDE9 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5376064F5E152752A7795C34 /* 5376064F5E152752A7795C34 */; };
+		046339FFBB5E1A725B03B7D4 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5C73A2C104D9CA536CE191A1 /* 5C73A2C104D9CA536CE191A1 */; };
+		8C0093A4CB48C349EE712515 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 385412D5F4AA51AF0C5F8AF7 /* 385412D5F4AA51AF0C5F8AF7 */; };
+		E290614D25E27280D313D74F /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6B2CE383EFA45FB56B9AD511 /* 6B2CE383EFA45FB56B9AD511 */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		9A27EB420D94D97567A247E0 /* ShanNianAIApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ShanNianAI/ShanNianAIApp.swift"; sourceTree = SOURCE_ROOT; };
+		41EFFFBBCAABB72518A8946A /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ShanNianAI/Models/Note.swift"; sourceTree = SOURCE_ROOT; };
+		25E52A2CFAA97B64C6E940B9 /* NoteCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ShanNianAI/Models/NoteCategory.swift"; sourceTree = SOURCE_ROOT; };
+		9CCDEFE0FD31BBEE0A5035A5 /* NoteStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ShanNianAI/CoreData/NoteStore.swift"; sourceTree = SOURCE_ROOT; };
+		239B0A369F3001524BB8793F /* AIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ShanNianAI/Services/AIService.swift"; sourceTree = SOURCE_ROOT; };
+		F3D4592694C584DCCAACF5C2 /* AppIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ShanNianAI/Utilities/AppIntents.swift"; sourceTree = SOURCE_ROOT; };
+		4D2E9DB10F1F69546897ACCC /* DataExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ShanNianAI/Utilities/DataExporter.swift"; sourceTree = SOURCE_ROOT; };
+		496686DB83A3BBC6377902BC /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ShanNianAI/Utilities/HapticManager.swift"; sourceTree = SOURCE_ROOT; };
+		8864A6BEBED1AE3B24E17010 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ShanNianAI/Utilities/NotificationManager.swift"; sourceTree = SOURCE_ROOT; };
+		61FE79030EBDC023A3C29A07 /* SpeechRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ShanNianAI/Utilities/SpeechRecognizer.swift"; sourceTree = SOURCE_ROOT; };
+		2B291510E3E939B7CC4060AE /* StoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ShanNianAI/Utilities/StoreManager.swift"; sourceTree = SOURCE_ROOT; };
+		EF3C2F0B891FF79079F66D91 /* CaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ShanNianAI/Views/CaptureView.swift"; sourceTree = SOURCE_ROOT; };
+		AB58BCD0E5AE81930F89BBEF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ShanNianAI/Views/ContentView.swift"; sourceTree = SOURCE_ROOT; };
+		A4286A0FFAA004AFBBA59AC4 /* InsightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ShanNianAI/Views/InsightsView.swift"; sourceTree = SOURCE_ROOT; };
+		0D14641E886500D79F19C3CA /* NoteDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ShanNianAI/Views/NoteDetailView.swift"; sourceTree = SOURCE_ROOT; };
+		861B2D06ED901B6C9BD49EA5 /* NoteListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ShanNianAI/Views/NoteListView.swift"; sourceTree = SOURCE_ROOT; };
+		4AF65373DF7D810C7928E3A4 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ShanNianAI/Views/OnboardingView.swift"; sourceTree = SOURCE_ROOT; };
+		B10F876625E4355496B42E3C /* ProSubscriptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ShanNianAI/Views/ProSubscriptionView.swift"; sourceTree = SOURCE_ROOT; };
+		81077C13CE6E09AB3C7F6A0C /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ShanNianAI/Views/SettingsView.swift"; sourceTree = SOURCE_ROOT; };
+		FF48B0C44398299744EB4B6F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Sources/ShanNianAI/Resources/Info.plist"; sourceTree = SOURCE_ROOT; };
+		B2C699A0A66D0B6299A514C8 /* ShanNianAI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Sources/ShanNianAI/ShanNianAI.entitlements"; sourceTree = SOURCE_ROOT; };
+		33589E470CD5EC321905DC42 /* ShanNianWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/WidgetExtension/ShanNianWidget.swift"; sourceTree = SOURCE_ROOT; };
+		5376064F5E152752A7795C34 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Sources/WidgetExtension/Info.plist"; sourceTree = SOURCE_ROOT; };
+		32D69B036CA6CA81C671606B /* WidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Sources/WidgetExtension/WidgetExtension.entitlements"; sourceTree = SOURCE_ROOT; };
+		A795024E3802294BDCBFECB9 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ShareExtension/ShareViewController.swift"; sourceTree = SOURCE_ROOT; };
+		41EFFFBBCAABB72518A8946A /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ShanNianAI/Models/Note.swift"; sourceTree = SOURCE_ROOT; };
+		25E52A2CFAA97B64C6E940B9 /* NoteCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ShanNianAI/Models/NoteCategory.swift"; sourceTree = SOURCE_ROOT; };
+		5C73A2C104D9CA536CE191A1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Sources/ShareExtension/Info.plist"; sourceTree = SOURCE_ROOT; };
+		385412D5F4AA51AF0C5F8AF7 /* MainInterface.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Sources/ShareExtension/MainInterface.storyboard"; sourceTree = SOURCE_ROOT; };
+		0C371FAF2BF17CB131193FEC /* ShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Sources/ShareExtension/ShareExtension.entitlements"; sourceTree = SOURCE_ROOT; };
+		C1FB3D6E8C804694E969E9F3 /* AIServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Tests/ShanNianAITests/AIServiceTests.swift"; sourceTree = SOURCE_ROOT; };
+		8B855158F7F0355A9DB29FE0 /* NoteModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Tests/ShanNianAITests/NoteModelTests.swift"; sourceTree = SOURCE_ROOT; };
+		DD4ECDD2F0A619A23D912E53 /* NoteStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Tests/ShanNianAITests/NoteStoreTests.swift"; sourceTree = SOURCE_ROOT; };
+		6B2CE383EFA45FB56B9AD511 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Tests/ShanNianAITests/Info.plist"; sourceTree = SOURCE_ROOT; };
+		49EF5080F05B39FF5C51E680 /* ShanNianAI.app */ = {isa = PBXFileReference; lastKnownFileType = wrapper.application; path = "ShanNianAI.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1BCFD2CF2F4AB0D23F8A79F1 /* WidgetExtension.appex */ = {isa = PBXFileReference; lastKnownFileType = wrapper.app-extension; path = "WidgetExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F45D407ED0317EE85650CE4F /* ShareExtension.appex */ = {isa = PBXFileReference; lastKnownFileType = wrapper.app-extension; path = "ShareExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		EB1B84727F116CB8278DF04D /* ShanNianAITests.xctest */ = {isa = PBXFileReference; lastKnownFileType = wrapper.cfbundle; path = "ShanNianAITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		3E55646611CD630C6193ABD5 = {
+			isa = PBXGroup;
+			children = (
+				839393AC19AC7BCE6F623E12 /* Sources */,
+				1C7B9027AD17B850663ECB2A /* Tests */,
+				8C1969BC5989E871C77EB3CC /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		839393AC19AC7BCE6F623E12 = {
+			isa = PBXGroup;
+			children = (
+				DB9ACA016AA3DF0872C9A654 /* ShanNianAI */,
+				CC0D08398134D24CBACB8998 /* WidgetExtension */,
+				BF337A722643A4135558D029 /* ShareExtension */,
+			);
+			sourceTree = "<group>";
+		};
+		DB9ACA016AA3DF0872C9A654 = {
+			isa = PBXGroup;
+			children = (
+				9A27EB420D94D97567A247E0 /* ShanNianAIApp.swift */,
+				41EFFFBBCAABB72518A8946A /* Note.swift */,
+				25E52A2CFAA97B64C6E940B9 /* NoteCategory.swift */,
+				9CCDEFE0FD31BBEE0A5035A5 /* NoteStore.swift */,
+				239B0A369F3001524BB8793F /* AIService.swift */,
+				F3D4592694C584DCCAACF5C2 /* AppIntents.swift */,
+				4D2E9DB10F1F69546897ACCC /* DataExporter.swift */,
+				496686DB83A3BBC6377902BC /* HapticManager.swift */,
+				8864A6BEBED1AE3B24E17010 /* NotificationManager.swift */,
+				61FE79030EBDC023A3C29A07 /* SpeechRecognizer.swift */,
+				2B291510E3E939B7CC4060AE /* StoreManager.swift */,
+				EF3C2F0B891FF79079F66D91 /* CaptureView.swift */,
+				AB58BCD0E5AE81930F89BBEF /* ContentView.swift */,
+				A4286A0FFAA004AFBBA59AC4 /* InsightsView.swift */,
+				0D14641E886500D79F19C3CA /* NoteDetailView.swift */,
+				861B2D06ED901B6C9BD49EA5 /* NoteListView.swift */,
+				4AF65373DF7D810C7928E3A4 /* OnboardingView.swift */,
+				B10F876625E4355496B42E3C /* ProSubscriptionView.swift */,
+				81077C13CE6E09AB3C7F6A0C /* SettingsView.swift */,
+				FF48B0C44398299744EB4B6F /* Info.plist */,
+				B2C699A0A66D0B6299A514C8 /* ShanNianAI.entitlements */,
+			);
+			path = "ShanNianAI";
+			sourceTree = "<group>";
+		};
+		CC0D08398134D24CBACB8998 = {
+			isa = PBXGroup;
+			children = (
+				33589E470CD5EC321905DC42 /* ShanNianWidget.swift */,
+				5376064F5E152752A7795C34 /* Info.plist */,
+				32D69B036CA6CA81C671606B /* WidgetExtension.entitlements */,
+			);
+			path = "WidgetExtension";
+			sourceTree = "<group>";
+		};
+		BF337A722643A4135558D029 = {
+			isa = PBXGroup;
+			children = (
+				A795024E3802294BDCBFECB9 /* ShareViewController.swift */,
+				41EFFFBBCAABB72518A8946A /* Note.swift */,
+				25E52A2CFAA97B64C6E940B9 /* NoteCategory.swift */,
+				5C73A2C104D9CA536CE191A1 /* Info.plist */,
+				385412D5F4AA51AF0C5F8AF7 /* MainInterface.storyboard */,
+				0C371FAF2BF17CB131193FEC /* ShareExtension.entitlements */,
+			);
+			path = "ShareExtension";
+			sourceTree = "<group>";
+		};
+		1C7B9027AD17B850663ECB2A = {
+			isa = PBXGroup;
+			children = (
+				ECB77B3C061C329422378380 /* ShanNianAITests */,
+			);
+			sourceTree = "<group>";
+		};
+		ECB77B3C061C329422378380 = {
+			isa = PBXGroup;
+			children = (
+				C1FB3D6E8C804694E969E9F3 /* AIServiceTests.swift */,
+				8B855158F7F0355A9DB29FE0 /* NoteModelTests.swift */,
+				DD4ECDD2F0A619A23D912E53 /* NoteStoreTests.swift */,
+				6B2CE383EFA45FB56B9AD511 /* Info.plist */,
+			);
+			path = ShanNianAITests;
+			sourceTree = "<group>";
+		};
+		8C1969BC5989E871C77EB3CC = {
+			isa = PBXGroup;
+			children = (
+				49EF5080F05B39FF5C51E680 /* ShanNianAI.app */,
+				1BCFD2CF2F4AB0D23F8A79F1 /* WidgetExtension.appex */,
+				F45D407ED0317EE85650CE4F /* ShareExtension.appex */,
+				EB1B84727F116CB8278DF04D /* ShanNianAITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		787CE74EBF06FCBE194AD5F0 /* ShanNianAI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 87244CC73B3A3BC717C8FC67 /* Build configuration list for PBXNativeTarget "ShanNianAI" */;
+			buildPhases = (
+				0997BCD31EF4224891CDFFD2 /* Sources */,
+				9DBD698A49656856D9C0D447 /* Frameworks */,
+				67B44EE843887B20B2C43039 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				9C04CE9281FB078FFD4AE3F8 /* PBXTargetDependency */,
+				0C57273A5A6A8315FA6810C8 /* PBXTargetDependency */,
+			);
+			name = "ShanNianAI";
+			productName = "ShanNianAI";
+			productReference = 49EF5080F05B39FF5C51E680 /* ShanNianAI.app */;
+			productType = "com.apple.product-type.application";
+		};
+
+		6E0C9323D11DA1B1E3B0F758 /* WidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 252D339B97222316BC2C7BDC;
+			buildPhases = (
+				36619A40D10AB2AAE7FBA464 /* Sources */,
+				B6D24E33001EB08D7A27CB77 /* Frameworks */,
+				263300E187F029D0CDDC1747 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "WidgetExtension";
+			productName = "WidgetExtension";
+			productReference = 1BCFD2CF2F4AB0D23F8A79F1 /* WidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+
+		6FEB4882B6DC515884970163 /* ShareExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9006C3190FB401653BD63334;
+			buildPhases = (
+				F0C7CDC551DE86BF2630CC28 /* Sources */,
+				AB1BD32CA8712ABD26AAE29A /* Frameworks */,
+				4AA835C095C647671A1A75AE /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "ShareExtension";
+			productName = "ShareExtension";
+			productReference = F45D407ED0317EE85650CE4F /* ShareExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+
+		6C17917E8F82461A45E9F498 /* ShanNianAITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F6F7191CF8BD0D24DFC1CB3A;
+			buildPhases = (
+				6C856BCFF801F0DDEBB05A07 /* Sources */,
+				7306117207692ADB82C5E600 /* Frameworks */,
+				9CD6138FD674B4FE94293C58 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				03A42672B71EEBE6446E14FC /* PBXTargetDependency */,
+			);
+			name = "ShanNianAITests";
+			productName = "ShanNianAITests";
+			productReference = EB1B84727F116CB8278DF04D /* ShanNianAITests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2C4FA5B866D139A56AE59F3C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					787CE74EBF06FCBE194AD5F0 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+					6E0C9323D11DA1B1E3B0F758 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+					6FEB4882B6DC515884970163 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+					6C17917E8F82461A45E9F498 = {
+						CreatedOnToolsVersion = 15.0;
+						TestTargetID = 787CE74EBF06FCBE194AD5F0;
+					};
+				};
+			};
+			buildConfigurationList = 21AD3177D867164E0A14DE04 /* Build configuration list for PBXProject "ShanNianAI" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 3E55646611CD630C6193ABD5;
+			productRefGroup = 8C1969BC5989E871C77EB3CC /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				787CE74EBF06FCBE194AD5F0 /* ShanNianAI */,
+				6E0C9323D11DA1B1E3B0F758 /* WidgetExtension */,
+				6FEB4882B6DC515884970163 /* ShareExtension */,
+				6C17917E8F82461A45E9F498 /* ShanNianAITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0997BCD31EF4224891CDFFD2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A85D6A174C3EF13830D6E61D /* ShanNianAIApp.swift in Sources */,
+				8D669A7D607B462CE97572C7 /* Note.swift in Sources */,
+				45D83684CB666FEB675A3AC7 /* NoteCategory.swift in Sources */,
+				5B76331778AC751040D20D02 /* NoteStore.swift in Sources */,
+				952A9C271BE6E03C68DE3F97 /* AIService.swift in Sources */,
+				E1DF30FBF73D7374666BADA1 /* AppIntents.swift in Sources */,
+				3669849819DDCA0ACADD6943 /* DataExporter.swift in Sources */,
+				A7D3EB6B1722BDCEC6637E9A /* HapticManager.swift in Sources */,
+				F3C6D8041EA9FEA5356EB05F /* NotificationManager.swift in Sources */,
+				FF01AD0629B76EBED4BC059E /* SpeechRecognizer.swift in Sources */,
+				AD8C1FEA84279EA997E33782 /* StoreManager.swift in Sources */,
+				5A7A77E4ABCFB09627EB039A /* CaptureView.swift in Sources */,
+				5FDD29453709FEAAF8A8C36D /* ContentView.swift in Sources */,
+				76904D9A6CC3B5D4D418C168 /* InsightsView.swift in Sources */,
+				0741EC852A2817BECC218A20 /* NoteDetailView.swift in Sources */,
+				DA5C2CAF823945856A3B60C7 /* NoteListView.swift in Sources */,
+				6BECB0D3377F6E98909DA320 /* OnboardingView.swift in Sources */,
+				395F5B27DFB5C4386CFBB6AD /* ProSubscriptionView.swift in Sources */,
+				2655C0EE43917049959C7FAA /* SettingsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		36619A40D10AB2AAE7FBA464 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E0C6C36BDC87C3DE08332F6F /* ShanNianWidget.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F0C7CDC551DE86BF2630CC28 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				34B04FAB39EB61D4243A1395 /* ShareViewController.swift in Sources */,
+				F8F0C26940D625C3DEB7C13D /* Note.swift in Sources */,
+				36752B5040F79B17FA1366FF /* NoteCategory.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6C856BCFF801F0DDEBB05A07 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				553488F4E43C399C3E505CE3 /* AIServiceTests.swift in Sources */,
+				7D10286B4535E54EA0994202 /* NoteModelTests.swift in Sources */,
+				4D5D9F7A8DCB53E666FA2B09 /* NoteStoreTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		9DBD698A49656856D9C0D447 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B6D24E33001EB08D7A27CB77 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AB1BD32CA8712ABD26AAE29A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7306117207692ADB82C5E600 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXResourcesBuildPhase section */
+		67B44EE843887B20B2C43039 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BA6C534C9A9337C6170A9529 /* Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		263300E187F029D0CDDC1747 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4A242C93B304A8C6445DEDE9 /* Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4AA835C095C647671A1A75AE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				046339FFBB5E1A725B03B7D4 /* Info.plist in Resources */,
+				8C0093A4CB48C349EE712515 /* MainInterface.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9CD6138FD674B4FE94293C58 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E290614D25E27280D313D74F /* Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		9C04CE9281FB078FFD4AE3F8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6E0C9323D11DA1B1E3B0F758 /* WidgetExtension */;
+			targetProxy = EB235F9E71F2E96E476E44B6 /* PBXContainerItemProxy */;
+		};
+		0C57273A5A6A8315FA6810C8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6FEB4882B6DC515884970163 /* ShareExtension */;
+			targetProxy = 14F62A46619BDB1031477982 /* PBXContainerItemProxy */;
+		};
+		03A42672B71EEBE6446E14FC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 787CE74EBF06FCBE194AD5F0 /* ShanNianAI */;
+			targetProxy = E8371ADC1AAB2E51D6A4DC40 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXContainerItemProxy section */
+		EB235F9E71F2E96E476E44B6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2C4FA5B866D139A56AE59F3C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6E0C9323D11DA1B1E3B0F758;
+			remoteInfo = "WidgetExtension";
+		};
+		14F62A46619BDB1031477982 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2C4FA5B866D139A56AE59F3C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6FEB4882B6DC515884970163;
+			remoteInfo = "ShareExtension";
+		};
+		E8371ADC1AAB2E51D6A4DC40 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2C4FA5B866D139A56AE59F3C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 787CE74EBF06FCBE194AD5F0;
+			remoteInfo = "ShanNianAI";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin XCBuildConfiguration section */
+		0F710FFD5EF697659484848A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = DEBUG=1 "$(inherited)";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = "Debug";
+		};
+		F6D54D7942DC33966CE8C004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_OPTIMIZATION_LEVEL = s;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = "Release";
+		};
+		6101C3E30515DD8D539C694F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = ;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Sources/ShanNianAI/Resources/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = 一闪AI;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "portrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "portrait";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shanian.flashai;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				CODE_SIGN_ENTITLEMENTS = Sources/ShanNianAI/ShanNianAI.entitlements;
+			};
+			name = "Debug";
+		};
+		C0A26C7ECE7E2DDDCE148CE3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = ;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Sources/ShanNianAI/Resources/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = 一闪AI;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "portrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "portrait";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shanian.flashai;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				CODE_SIGN_ENTITLEMENTS = Sources/ShanNianAI/ShanNianAI.entitlements;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = "Release";
+		};
+		FE4D561979F5845B5142E958 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = ;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Sources/WidgetExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = 一闪AI;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "portrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "portrait";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shanian.flashai.widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				CODE_SIGN_ENTITLEMENTS = Sources/WidgetExtension/WidgetExtension.entitlements;
+			};
+			name = "Debug";
+		};
+		18C9211786BEEEC26CADBAC2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = ;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Sources/WidgetExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = 一闪AI;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "portrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "portrait";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shanian.flashai.widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				CODE_SIGN_ENTITLEMENTS = Sources/WidgetExtension/WidgetExtension.entitlements;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = "Release";
+		};
+		3A04FCFB28E2A4551953871B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = ;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Sources/ShareExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = 一闪AI;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "portrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "portrait";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shanian.flashai.share;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				CODE_SIGN_ENTITLEMENTS = Sources/ShareExtension/ShareExtension.entitlements;
+			};
+			name = "Debug";
+		};
+		3DCB5A3991C41890D19AC45A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = ;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Sources/ShareExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = 一闪AI;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "portrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "portrait";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shanian.flashai.share;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				CODE_SIGN_ENTITLEMENTS = Sources/ShareExtension/ShareExtension.entitlements;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = "Release";
+		};
+		412CF8550510F3263423A968 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = ;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Tests/ShanNianAITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shanian.flashai.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ShanNianAI.app/ShanNianAI";
+			};
+			name = "Debug";
+		};
+		F816015669AC78617A2B2F0B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = ;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Tests/ShanNianAITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shanian.flashai.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ShanNianAI.app/ShanNianAI";
+			};
+			name = "Release";
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		21AD3177D867164E0A14DE04 /* Build configuration list for PBXProject "PBXProject" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0F710FFD5EF697659484848A /* Debug */,
+				F6D54D7942DC33966CE8C004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = "Release";
+		};
+		87244CC73B3A3BC717C8FC67 /* Build configuration list for PBXProject "ShanNianAI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6101C3E30515DD8D539C694F /* Debug */,
+				C0A26C7ECE7E2DDDCE148CE3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = "Release";
+		};
+		252D339B97222316BC2C7BDC /* Build configuration list for PBXProject "WidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FE4D561979F5845B5142E958 /* Debug */,
+				18C9211786BEEEC26CADBAC2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = "Release";
+		};
+		9006C3190FB401653BD63334 /* Build configuration list for PBXProject "ShareExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3A04FCFB28E2A4551953871B /* Debug */,
+				3DCB5A3991C41890D19AC45A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = "Release";
+		};
+		F6F7191CF8BD0D24DFC1CB3A /* Build configuration list for PBXProject "ShanNianAITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				412CF8550510F3263423A968 /* Debug */,
+				F816015669AC78617A2B2F0B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = "Release";
+		};
+/* End XCConfigurationList section */
+
+	};
+	rootObject = 2C4FA5B866D139A56AE59F3C /* Project object */;
+}

@@ -2,7 +2,7 @@ import Foundation
 import SwiftUI
 import UniformTypeIdentifiers
 
-struct ExportFormat: CaseIterable, Identifiable {
+struct ExportFormat: CaseIterable, Identifiable, Hashable {
     let id: String
     let name: String
     let icon: String
