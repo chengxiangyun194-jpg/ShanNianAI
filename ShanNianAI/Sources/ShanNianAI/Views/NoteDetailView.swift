@@ -6,11 +6,13 @@ struct NoteDetailView: View {
     @State private var isEditing = false
     @State private var editedContent = ""
     @State private var showRelatedNotes = false
+    @State private var showDeleteConfirm = false
+    @State private var appeared = false
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                // Category badge
+                // Category badge + actions
                 HStack(spacing: 8) {
                     Label(note.category.rawValue, systemImage: note.category.icon)
                         .font(.subheadline.bold())
@@ -26,9 +28,37 @@ struct NoteDetailView: View {
                         Image(systemName: "star.fill")
                             .foregroundColor(.yellow)
                     }
+
+                    if note.isPinned {
+                        Image(systemName: "pin.fill")
+                            .foregroundColor(.blue)
+                    }
+
+                    Spacer()
+
+                    // Quick action buttons
+                    Button {
+                        HapticManager.light()
+                        noteStore.togglePin(note)
+                    } label: {
+                        Image(systemName: note.isPinned ? "pin.slash" : "pin")
+                            .font(.title3)
+                            .foregroundColor(.blue)
+                    }
+                    .accessibilityLabel(note.isPinned ? "取消置顶" : "置顶")
+
+                    Button {
+                        HapticManager.light()
+                        noteStore.toggleFavorite(note)
+                    } label: {
+                        Image(systemName: note.isFavorite ? "star.fill" : "star")
+                            .font(.title3)
+                            .foregroundColor(.yellow)
+                    }
+                    .accessibilityLabel(note.isFavorite ? "取消收藏" : "收藏")
                 }
 
-                // Content
+                // Content with markdown rendering
                 if isEditing {
                     TextEditor(text: $editedContent)
                         .font(.body)
@@ -39,9 +69,9 @@ struct NoteDetailView: View {
                                 .fill(Color(.systemGray6))
                         )
                 } else {
-                    Text(note.content)
-                        .font(.body)
-                        .lineSpacing(6)
+                    MarkdownText(note.content)
+                        .opacity(appeared ? 1 : 0)
+                        .offset(y: appeared ? 0 : 10)
                 }
 
                 // AI Summary
@@ -81,7 +111,9 @@ struct NoteDetailView: View {
                 if !note.relatedNoteIDs.isEmpty {
                     VStack(alignment: .leading, spacing: 8) {
                         Button {
-                            showRelatedNotes.toggle()
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                showRelatedNotes.toggle()
+                            }
                         } label: {
                             HStack {
                                 Image(systemName: "link")
@@ -90,6 +122,7 @@ struct NoteDetailView: View {
                                     .font(.subheadline)
                                 Spacer()
                                 Image(systemName: showRelatedNotes ? "chevron.up" : "chevron.down")
+                                    .font(.caption)
                             }
                             .foregroundColor(.primary)
                         }
@@ -106,6 +139,7 @@ struct NoteDetailView: View {
                                         )
                                 }
                                 .buttonStyle(.plain)
+                                .transition(.opacity.combined(with: .move(edge: .top)))
                             }
                         }
                     }
@@ -145,6 +179,7 @@ struct NoteDetailView: View {
                     }
 
                     Button {
+                        HapticManager.success()
                         noteStore.markReviewed(note)
                     } label: {
                         Label("标记已回顾", systemImage: "checkmark.circle")
@@ -153,13 +188,18 @@ struct NoteDetailView: View {
                     Divider()
 
                     Button(role: .destructive) {
-                        noteStore.deleteNote(note)
+                        showDeleteConfirm = true
                     } label: {
                         Label("删除", systemImage: "trash")
                     }
                 } label: {
                     Image(systemName: "ellipsis.circle")
                 }
+            }
+        }
+        .onAppear {
+            withAnimation(.easeOut(duration: 0.3)) {
+                appeared = true
             }
         }
         .sheet(isPresented: $isEditing) {
@@ -177,12 +217,22 @@ struct NoteDetailView: View {
                     }
                     ToolbarItem(placement: .confirmationAction) {
                         Button("保存") {
+                            HapticManager.medium()
                             noteStore.updateNote(note, content: editedContent)
                             isEditing = false
                         }
                     }
                 }
             }
+        }
+        .alert("确认删除", isPresented: $showDeleteConfirm) {
+            Button("取消", role: .cancel) {}
+            Button("删除", role: .destructive) {
+                HapticManager.warning()
+                noteStore.deleteNote(note)
+            }
+        } message: {
+            Text("删除后无法恢复")
         }
     }
 
@@ -209,6 +259,181 @@ struct NoteDetailView: View {
                 .stroke(color.opacity(0.15), lineWidth: 1)
         )
     }
+}
+
+// MARK: - Markdown Text Renderer
+
+struct MarkdownText: View {
+    let text: String
+
+    init(_ text: String) {
+        self.text = text
+    }
+
+    var body: some View {
+        let blocks = parseMarkdown(text)
+
+        VStack(alignment: .leading, spacing: 8) {
+            ForEach(Array(blocks.enumerated()), id: \.offset) { _, block in
+                switch block {
+                case .heading(let content, let level):
+                    Text(content)
+                        .font(headingFont(level))
+                        .fontWeight(.bold)
+                        .foregroundColor(.primary)
+                        .padding(.top, level <= 2 ? 12 : 4)
+
+                case .paragraph(let content):
+                    Text(content)
+                        .font(.body)
+                        .lineSpacing(4)
+
+                case .bold(let content):
+                    Text(content).bold()
+                        + Text(parseInline(text: content).1)
+
+                case .bullet(let content):
+                    HStack(alignment: .top, spacing: 6) {
+                        Text("•")
+                            .foregroundColor(.secondary)
+                        Text(content)
+                            .font(.body)
+                    }
+                    .padding(.leading, 8)
+
+                case .numbered(let index, let content):
+                    HStack(alignment: .top, spacing: 6) {
+                        Text("\(index).")
+                            .foregroundColor(.secondary)
+                        Text(content)
+                            .font(.body)
+                    }
+                    .padding(.leading, 8)
+
+                case .codeBlock(let content):
+                    Text(content)
+                        .font(.caption.monospaced())
+                        .padding(10)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color(.systemGray6))
+                        )
+                }
+            }
+        }
+    }
+
+    private func headingFont(_ level: Int) -> Font {
+        switch level {
+        case 1: return .title
+        case 2: return .title2
+        case 3: return .title3
+        default: return .headline
+        }
+    }
+
+    private func parseInline(text: String) -> (String, String) {
+        return (text, "")
+    }
+}
+
+// MARK: - Markdown Block Types
+
+enum MarkdownBlock {
+    case heading(String, Int)      // content, level (1-6)
+    case paragraph(String)
+    case bold(String)
+    case bullet(String)
+    case numbered(Int, String)
+    case codeBlock(String)
+}
+
+func parseMarkdown(_ text: String) -> [MarkdownBlock] {
+    let lines = text.components(separatedBy: "\n")
+    var blocks: [MarkdownBlock] = []
+    var codeBlockBuffer = ""
+    var inCodeBlock = false
+    var currentParagraph = ""
+    var numberIndex = 1
+
+    func flushParagraph() {
+        let trimmed = currentParagraph.trimmingCharacters(in: .whitespaces)
+        if !trimmed.isEmpty {
+            blocks.append(.paragraph(trimmed))
+        }
+        currentParagraph = ""
+    }
+
+    for line in lines {
+        let trimmed = line.trimmingCharacters(in: .whitespaces)
+
+        // Code block fences
+        if trimmed.hasPrefix("```") {
+            if inCodeBlock {
+                if !codeBlockBuffer.isEmpty {
+                    blocks.append(.codeBlock(codeBlockBuffer))
+                }
+                codeBlockBuffer = ""
+                inCodeBlock = false
+            } else {
+                flushParagraph()
+                inCodeBlock = true
+            }
+            continue
+        }
+
+        if inCodeBlock {
+            codeBlockBuffer += (codeBlockBuffer.isEmpty ? "" : "\n") + line
+            continue
+        }
+
+        // Headings
+        if trimmed.hasPrefix("#### ") {
+            flushParagraph()
+            blocks.append(.heading(String(trimmed.dropFirst(5)), 4))
+        } else if trimmed.hasPrefix("### ") {
+            flushParagraph()
+            blocks.append(.heading(String(trimmed.dropFirst(4)), 3))
+        } else if trimmed.hasPrefix("## ") {
+            flushParagraph()
+            blocks.append(.heading(String(trimmed.dropFirst(3)), 2))
+        } else if trimmed.hasPrefix("# ") {
+            flushParagraph()
+            blocks.append(.heading(String(trimmed.dropFirst(2)), 1))
+        }
+        // Bullet list
+        else if trimmed.hasPrefix("- ") || trimmed.hasPrefix("* ") {
+            flushParagraph()
+            blocks.append(.bullet(String(trimmed.dropFirst(2))))
+        }
+        // Numbered list
+        else if let match = try? Regex("^(\\d+)\\.\\s(.+)").wholeMatch(in: trimmed) {
+            flushParagraph()
+            if let numStr = match[1].substring, let num = Int(numStr) {
+                blocks.append(.numbered(num, String(match[2].substring ?? "")))
+            }
+        }
+        // Empty line = paragraph break
+        else if trimmed.isEmpty {
+            flushParagraph()
+        }
+        // Regular text
+        else {
+            if !currentParagraph.isEmpty { currentParagraph += "\n" }
+            currentParagraph += line
+        }
+    }
+
+    // Flush remaining code block
+    if inCodeBlock && !codeBlockBuffer.isEmpty {
+        blocks.append(.codeBlock(codeBlockBuffer))
+    }
+
+    // Flush remaining paragraph
+    flushParagraph()
+
+    return blocks
 }
 
 // MARK: - Flow Layout

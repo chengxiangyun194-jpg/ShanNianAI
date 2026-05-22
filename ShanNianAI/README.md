@@ -2,88 +2,100 @@
 
 > 抓住每个灵感，AI帮你整理
 
+## 功能特性
+
+- ⚡ **极速捕捉** — 一键输入，瞬间保存，支持 500 字
+- 🎤 **语音输入** — 说话转文字，释放双手
+- 🤖 **AI 智能整理** — 自动分类、生成摘要、发现关联笔记
+- 📊 **数据洞察** — AI 周报、分类分布、情绪趋势
+- 🔥 **连续记录** — 每日打卡，追踪连续记录天数
+- 📌 **置顶笔记** — 重要笔记固定到列表顶部
+- ☑️ **批量操作** — 多选删除，效率翻倍
+- 🔍 **搜索筛选** — 全文搜索 + 8 种分类筛选
+- 🕐 **定时回顾** — 1/3/7/14/30 天间隔回顾
+- 🔔 **智能提醒** — 每日记录提醒 + 定时回顾推送
+- ☁️ **iCloud 同步** — SwiftData + CloudKit 多设备同步
+- 📝 **Markdown 渲染** — 支持标题、列表、代码块
+- 🧩 **桌面小组件** — 今日统计 + 快速捕捉入口
+- 📱 **首次引导** — 4 步引导，优雅配置 AI 服务
+- 💰 **Pro 订阅** — StoreKit 2 内购，月度/年度方案
+- ♿ **无障碍适配** — VoiceOver 标签 + 触觉反馈
+
 ## 技术栈
 
 - **SwiftUI** — 声明式 UI
-- **SwiftData** — 本地持久化
+- **SwiftData** — 本地持久化 + CloudKit
 - **OpenAI API** — AI 分类/摘要/洞察
 - **WidgetKit** — 桌面小组件
+- **StoreKit 2** — 内购订阅
+- **Speech** — 语音识别
+- **UserNotifications** — 本地通知
 - **iOS 17.0+**
 
 ## 项目结构
 
 ```
 ShanNianAI/
-├── project.yml                  # XcodeGen 项目配置
+├── project.yml
 ├── Sources/
 │   ├── ShanNianAI/
-│   │   ├── ShanNianAIApp.swift   # App 入口
-│   │   ├── Models/
-│   │   │   └── Note.swift        # SwiftData 数据模型
-│   │   ├── CoreData/
-│   │   │   └── NoteStore.swift   # 数据管理 + AI pipeline
-│   │   ├── Services/
-│   │   │   └── AIService.swift   # OpenAI API 封装
+│   │   ├── ShanNianAIApp.swift
+│   │   ├── Models/Note.swift
+│   │   ├── CoreData/NoteStore.swift
+│   │   ├── Services/AIService.swift
+│   │   ├── Utilities/
+│   │   │   ├── HapticManager.swift
+│   │   │   ├── NotificationManager.swift
+│   │   │   ├── SpeechRecognizer.swift
+│   │   │   └── StoreManager.swift
 │   │   ├── Views/
-│   │   │   ├── ContentView.swift      # 主 TabView
-│   │   │   ├── CaptureView.swift      # 极速捕捉
-│   │   │   ├── NoteListView.swift     # 笔记列表 + 回顾
-│   │   │   ├── NoteDetailView.swift   # 笔记详情
-│   │   │   ├── InsightsView.swift     # AI 周报
-│   │   │   └── SettingsView.swift     # 设置
-│   │   └── Resources/
-│   │       └── Info.plist
+│   │   │   ├── ContentView.swift
+│   │   │   ├── OnboardingView.swift
+│   │   │   ├── CaptureView.swift
+│   │   │   ├── NoteListView.swift
+│   │   │   ├── NoteDetailView.swift
+│   │   │   ├── InsightsView.swift
+│   │   │   ├── SettingsView.swift
+│   │   │   └── ProSubscriptionView.swift
+│   │   └── Resources/Info.plist
 │   └── WidgetExtension/
-│       ├── ShanNianWidget.swift
-│       └── Info.plist
-└── AppStore/
-    └── AppStoreListing.md        # App Store 上架素材
+│       └── ShanNianWidget.swift
+└── Tests/ShanNianAITests/
 ```
 
 ## 快速开始
 
-### 1. 安装 Xcode
-
-从 App Store 下载 Xcode（需要 macOS 14+）。
-
-### 2. 生成项目
-
 ```bash
-# 安装 xcodegen
 brew install xcodegen
-
-# 生成 .xcodeproj
 cd ShanNianAI
 xcodegen generate
-```
-
-### 3. 打开项目
-
-```bash
 open ShanNianAI.xcodeproj
 ```
 
-选择 iOS 模拟器，按 Cmd+R 运行。
+### Xcode 配置要点
 
-### 4. 配置 AI
+| Capability | Target | 说明 |
+|-----------|--------|------|
+| App Groups | ShanNianAI + Widget | group.com.shanian.flashai |
+| iCloud → CloudKit | ShanNianAI | iCloud.com.shanian.flashai |
+| Push Notifications | ShanNianAI | 远程推送（CloudKit 同步需要）|
+| Background Modes → Remote Notifications | ShanNianAI | CloudKit 推送同步 |
+| URL Types | ShanNianAI | shanian:// |
 
-在 App 的设置页面输入你的 OpenAI API Key。
+## StoreKit 配置
 
-## App Store 上架流程
+在 App Store Connect 创建以下内购项目：
 
-1. 注册 Apple Developer Program ($99/年)
-2. 在 App Store Connect 创建 App
-3. 在 Xcode 中配置 Bundle ID 和签名
-4. 准备截屏（5张，iPhone 6.7" + 6.5" + 5.5"）
-5. Archive → 上传至 App Store Connect
-6. 填写审核信息（隐私政策、App 描述等）
-7. 提交审核
+| Product ID | 类型 |
+|-----------|------|
+| com.shanian.flashai.pro.monthly | 自动续期订阅 ¥12/月 |
+| com.shanian.flashai.pro.yearly | 自动续期订阅 ¥88/年 |
 
-## 定价策略
+## 定价
 
-- 免费：每月 50 条笔记 + AI 分类
+- 免费：每月 50 条笔记 + 50 次 AI 分类
 - 一闪Pro 月度：¥12/月
-- 一闪Pro 年度：¥88/年（推荐）
+- 一闪Pro 年度：¥88/年
 
 ## License
 

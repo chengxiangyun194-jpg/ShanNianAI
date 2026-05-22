@@ -20,9 +20,11 @@ targets:
       base:
         INFOPLIST_FILE: Sources/ShanNianAI/Resources/Info.plist
         PRODUCT_BUNDLE_IDENTIFIER: com.shanian.flashai
+        CODE_SIGN_ENTITLEMENTS: Sources/ShanNianAI/ShanNianAI.entitlements
         DEVELOPMENT_TEAM: ""
     dependencies:
       - target: WidgetExtension
+      - target: ShareExtension
       - target: ShanNianAITests
         type: target
 
@@ -35,6 +37,18 @@ targets:
       base:
         INFOPLIST_FILE: Sources/WidgetExtension/Info.plist
         PRODUCT_BUNDLE_IDENTIFIER: com.shanian.flashai.widget
+        CODE_SIGN_ENTITLEMENTS: Sources/WidgetExtension/WidgetExtension.entitlements
+
+  ShareExtension:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: Sources/ShareExtension
+    settings:
+      base:
+        INFOPLIST_FILE: Sources/ShareExtension/Info.plist
+        PRODUCT_BUNDLE_IDENTIFIER: com.shanian.flashai.share
+        CODE_SIGN_ENTITLEMENTS: Sources/ShareExtension/ShareExtension.entitlements
 
   ShanNianAITests:
     type: bundle.unit-test

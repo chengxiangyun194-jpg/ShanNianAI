@@ -40,5 +40,11 @@ struct ContentView: View {
                 isConfigured = true
             }
         }
+        .onOpenURL { url in
+            if url.scheme == "shanian" && url.host == "capture" {
+                HapticManager.medium()
+                selectedTab = 0
+            }
+        }
     }
 }

@@ -4,6 +4,7 @@ struct InsightsView: View {
     @EnvironmentObject var noteStore: NoteStore
     @State private var isGenerating = false
     @State private var selectedTimeRange: TimeRange = .week
+    @State private var appeared = false
 
     enum TimeRange: String, CaseIterable {
         case week = "本周"
@@ -14,7 +15,6 @@ struct InsightsView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
-                    // Time range picker
                     Picker("时间范围", selection: $selectedTimeRange) {
                         ForEach(TimeRange.allCases, id: \.self) { range in
                             Text(range.rawValue).tag(range)
@@ -22,22 +22,18 @@ struct InsightsView: View {
                     }
                     .pickerStyle(.segmented)
                     .padding(.horizontal)
+                    .onChange(of: selectedTimeRange) { _, _ in
+                        HapticManager.selection()
+                    }
 
-                    // Stats cards
                     statsGrid
-
-                    // Category distribution
                     categorySection
-
-                    // AI Insight card
                     aiInsightSection
 
-                    // Generate button
                     if noteStore.weeklyInsight == nil {
                         generateButton
                     }
 
-                    // Review prompt
                     reviewSection
                 }
                 .padding()
@@ -114,7 +110,7 @@ struct InsightsView: View {
                 GeometryReader { geo in
                     RoundedRectangle(cornerRadius: 4)
                         .fill(category.color.opacity(0.3))
-                        .frame(width: geo.size.width * ratio)
+                        .frame(width: max(geo.size.width * ratio, 4))
                 }
                 .frame(height: 6)
                 .background(
@@ -129,6 +125,8 @@ struct InsightsView: View {
                 .fill(Color(.systemBackground))
                 .shadow(color: .black.opacity(0.05), radius: 8, y: 2)
         )
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("分类分布图表")
     }
 
     // MARK: - AI Insight
@@ -144,6 +142,7 @@ struct InsightsView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 40)
+                .accessibilityLabel("AI正在分析")
             } else if let insight = noteStore.weeklyInsight {
                 VStack(alignment: .leading, spacing: 16) {
                     HStack {
@@ -181,6 +180,7 @@ struct InsightsView: View {
                                 .stroke(Color.purple.opacity(0.1), lineWidth: 1)
                         )
                 )
+                .transition(.opacity.combined(with: .scale(scale: 0.95)))
             }
         }
     }
@@ -203,6 +203,7 @@ struct InsightsView: View {
 
     private var generateButton: some View {
         Button {
+            HapticManager.medium()
             Task { await generateInsight() }
         } label: {
             HStack {
@@ -223,6 +224,7 @@ struct InsightsView: View {
             .clipShape(RoundedRectangle(cornerRadius: 16))
         }
         .disabled(isGenerating)
+        .accessibilityLabel("生成AI洞察报告")
     }
 
     // MARK: - Review Section
@@ -250,6 +252,8 @@ struct InsightsView: View {
                 .fill(Color(.systemBackground))
                 .shadow(color: .black.opacity(0.05), radius: 8, y: 2)
         )
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("回顾提醒")
     }
 
     // MARK: - Helpers
@@ -264,7 +268,9 @@ struct InsightsView: View {
     private func generateInsight() async {
         isGenerating = true
         await noteStore.generateWeeklyInsight()
+        withAnimation(.easeInOut(duration: 0.3)) { appeared = true }
         isGenerating = false
+        HapticManager.success()
     }
 }
 
@@ -295,5 +301,7 @@ struct StatCard: View {
                 .fill(Color(.systemBackground))
                 .shadow(color: .black.opacity(0.04), radius: 6, y: 2)
         )
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(title)：\(value)")
     }
 }

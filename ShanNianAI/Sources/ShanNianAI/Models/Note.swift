@@ -17,6 +17,7 @@ final class Note {
     var reviewCount: Int
     var isFavorite: Bool
     var isArchived: Bool
+    var isPinned: Bool
 
     init(
         content: String,
@@ -38,6 +39,7 @@ final class Note {
         self.reviewCount = 0
         self.isFavorite = false
         self.isArchived = false
+        self.isPinned = false
     }
 }
 
@@ -75,6 +77,19 @@ enum NoteCategory: String, Codable, CaseIterable {
         case .learning: return "graduationcap"
         case .uncategorized: return "folder"
         }
+    }
+}
+
+// MARK: - Streak Data
+
+@Model
+final class DailyRecord {
+    var date: Date
+    var noteCount: Int
+
+    init(date: Date, noteCount: Int = 0) {
+        self.date = Calendar.current.startOfDay(for: date)
+        self.noteCount = noteCount
     }
 }
 

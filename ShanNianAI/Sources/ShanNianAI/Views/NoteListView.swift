@@ -6,48 +6,78 @@ struct NoteListView: View {
     @State private var selectedCategory: NoteCategory?
     @State private var showReviewSheet = false
     @State private var reviewDaysAgo = 7
+    @State private var isBatchMode = false
+    @State private var selectedNoteIDs = Set<UUID>()
 
     private var filteredNotes: [Note] {
-        var notes = noteStore.searchNotes(query: searchQuery)
+        let base = noteStore.searchNotes(query: searchQuery)
             .filter { !$0.isArchived }
 
+        let byCategory: [Note]
         if let category = selectedCategory {
-            notes = notes.filter { $0.category == category }
+            byCategory = base.filter { $0.category == category }
+        } else {
+            byCategory = base
         }
 
-        return notes
+        // Pinned notes first, then by date
+        return byCategory.sorted { a, b in
+            if a.isPinned != b.isPinned { return a.isPinned }
+            return a.createdAt > b.createdAt
+        }
     }
 
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Category filter chips
+                if isBatchMode {
+                    batchToolbar
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                }
+
                 categoryFilterBar
                     .padding(.horizontal)
                     .padding(.vertical, 8)
 
-                // Notes list
                 if filteredNotes.isEmpty {
                     emptyStateView
                 } else {
                     List {
                         ForEach(filteredNotes) { note in
-                            NavigationLink(destination: NoteDetailView(note: note)) {
-                                NoteRowView(note: note)
-                            }
-                            .swipeActions(edge: .trailing) {
-                                Button(role: .destructive) {
-                                    noteStore.deleteNote(note)
-                                } label: {
-                                    Label("删除", systemImage: "trash")
+                            if isBatchMode {
+                                batchNoteRow(note)
+                            } else {
+                                NavigationLink(destination: NoteDetailView(note: note)) {
+                                    NoteRowView(note: note)
                                 }
+                                .swipeActions(edge: .trailing) {
+                                    Button(role: .destructive) {
+                                        HapticManager.warning()
+                                        noteStore.deleteNote(note)
+                                    } label: {
+                                        Label("删除", systemImage: "trash")
+                                    }
 
-                                Button {
-                                    noteStore.toggleFavorite(note)
-                                } label: {
-                                    Label("收藏", systemImage: note.isFavorite ? "star.slash" : "star")
+                                    Button {
+                                        HapticManager.light()
+                                        noteStore.toggleFavorite(note)
+                                    } label: {
+                                        Label("收藏", systemImage: note.isFavorite ? "star.slash" : "star")
+                                    }
+                                    .tint(.orange)
                                 }
-                                .tint(.orange)
+                                .swipeActions(edge: .leading) {
+                                    Button {
+                                        HapticManager.selection()
+                                        noteStore.togglePin(note)
+                                    } label: {
+                                        Label(
+                                            note.isPinned ? "取消置顶" : "置顶",
+                                            systemImage: note.isPinned ? "pin.slash" : "pin"
+                                        )
+                                    }
+                                    .tint(.blue)
+                                }
                             }
                         }
                     }
@@ -57,16 +87,84 @@ struct NoteListView: View {
             .navigationTitle("闪念笔记")
             .searchable(text: $searchQuery, prompt: "搜索笔记内容或标签")
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        HapticManager.selection()
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            isBatchMode.toggle()
+                            if !isBatchMode { selectedNoteIDs.removeAll() }
+                        }
+                    } label: {
+                        Text(isBatchMode ? "完成" : "选择")
+                            .font(.subheadline)
+                    }
+                }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         showReviewSheet = true
                     } label: {
                         Image(systemName: "clock.arrow.circlepath")
                     }
+                    .accessibilityLabel("笔记回顾")
                 }
             }
             .sheet(isPresented: $showReviewSheet) {
                 reviewView
+            }
+        }
+    }
+
+    // MARK: - Batch mode
+
+    private var batchToolbar: some View {
+        HStack(spacing: 16) {
+            Button(role: .destructive) {
+                HapticManager.warning()
+                for id in selectedNoteIDs {
+                    if let note = noteStore.notes.first(where: { $0.id == id }) {
+                        noteStore.deleteNote(note)
+                    }
+                }
+                selectedNoteIDs.removeAll()
+            } label: {
+                Label("删除(\(selectedNoteIDs.count))", systemImage: "trash")
+            }
+            .disabled(selectedNoteIDs.isEmpty)
+
+            Spacer()
+
+            Button {
+                HapticManager.selection()
+                let allIDs = Set(filteredNotes.map(\.id))
+                selectedNoteIDs = selectedNoteIDs == allIDs ? [] : allIDs
+            } label: {
+                Text(selectedNoteIDs.count == filteredNotes.count ? "取消全选" : "全选")
+                    .font(.subheadline)
+            }
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 10)
+        .background(.ultraThinMaterial)
+    }
+
+    private func batchNoteRow(_ note: Note) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: selectedNoteIDs.contains(note.id) ? "checkmark.circle.fill" : "circle")
+                .foregroundColor(selectedNoteIDs.contains(note.id) ? .blue : .gray.opacity(0.4))
+                .font(.title3)
+                .contentTransition(.symbolEffect(.replace))
+
+            NoteRowView(note: note)
+
+            Spacer()
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            HapticManager.light()
+            if selectedNoteIDs.contains(note.id) {
+                selectedNoteIDs.remove(note.id)
+            } else {
+                selectedNoteIDs.insert(note.id)
             }
         }
     }
@@ -82,6 +180,7 @@ struct NoteListView: View {
                     color: .gray,
                     isSelected: selectedCategory == nil
                 ) {
+                    HapticManager.selection()
                     selectedCategory = nil
                 }
 
@@ -92,6 +191,7 @@ struct NoteListView: View {
                         color: category.color,
                         isSelected: selectedCategory == category
                     ) {
+                        HapticManager.selection()
                         selectedCategory = selectedCategory == category ? nil : category
                     }
                 }
@@ -115,6 +215,8 @@ struct NoteListView: View {
             Spacer()
         }
         .frame(maxWidth: .infinity)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("还没有笔记，回到捕捉页面写下第一个闪念吧")
     }
 
     private var reviewView: some View {
@@ -162,6 +264,7 @@ struct NoteListView: View {
                             .padding(.vertical, 4)
                             .swipeActions {
                                 Button {
+                                    HapticManager.success()
                                     noteStore.markReviewed(note)
                                 } label: {
                                     Label("已回顾", systemImage: "checkmark.circle")
@@ -212,6 +315,8 @@ struct CategoryChip: View {
             )
             .foregroundColor(isSelected ? color : .secondary)
         }
+        .accessibilityLabel("\(label)分类")
+        .accessibilityAddTraits(isSelected ? [.isSelected, .isButton] : .isButton)
     }
 }
 
@@ -232,6 +337,11 @@ struct NoteRowView: View {
                     Image(systemName: "star.fill")
                         .font(.caption2)
                         .foregroundColor(.yellow)
+                }
+                if note.isPinned {
+                    Image(systemName: "pin.fill")
+                        .font(.caption2)
+                        .foregroundColor(.blue)
                 }
                 Spacer()
                 Text(note.createdAt, style: .relative)
@@ -275,5 +385,15 @@ struct NoteRowView: View {
             }
         }
         .padding(.vertical, 4)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(accessibilityDescription)
+    }
+
+    private var accessibilityDescription: String {
+        var parts = [note.content.prefix(40)]
+        parts.append("分类\(note.category.rawValue)")
+        if note.isPinned { parts.append("已置顶") }
+        if note.isFavorite { parts.append("已收藏") }
+        return parts.joined(separator: "，")
     }
 }

@@ -2,11 +2,14 @@ import SwiftUI
 
 struct CaptureView: View {
     @EnvironmentObject var noteStore: NoteStore
+    @StateObject private var speechRecognizer = SpeechRecognizer()
     @State private var inputText = ""
     @State private var isSubmitting = false
     @State private var showSuccess = false
     @FocusState private var isFocused: Bool
     @State private var placeholderIndex = 0
+    @State private var submitScale: CGFloat = 1
+    @State private var showVoiceTip = true
 
     private let placeholders = [
         "刚想到什么？",
@@ -19,14 +22,11 @@ struct CaptureView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Quick stats
                 quickStatsBar
                     .padding(.horizontal)
                     .padding(.top, 8)
 
-                // Main input area
                 VStack(spacing: 24) {
-                    // Header
                     VStack(spacing: 8) {
                         Text("一闪")
                             .font(.system(size: 36, weight: .bold, design: .rounded))
@@ -38,13 +38,25 @@ struct CaptureView: View {
                                 )
                             )
 
+                        if noteStore.currentStreak > 0 {
+                            HStack(spacing: 4) {
+                                Image(systemName: "flame.fill")
+                                    .foregroundColor(.orange)
+                                Text("连续 \(noteStore.currentStreak) 天")
+                                    .font(.caption.bold())
+                                    .foregroundColor(.orange)
+                            }
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 4)
+                            .background(Capsule().fill(.orange.opacity(0.1)))
+                        }
+
                         Text("抓住每一个闪念")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                     }
                     .padding(.top, 20)
 
-                    // Input box
                     VStack(spacing: 16) {
                         ZStack(alignment: .topLeading) {
                             if inputText.isEmpty {
@@ -68,14 +80,28 @@ struct CaptureView: View {
                                         inputText = String(newValue.prefix(500))
                                     }
                                 }
+                                .onChange(of: speechRecognizer.transcribedText) { _, text in
+                                    if !text.isEmpty && speechRecognizer.isRecording {
+                                        inputText = text
+                                    }
+                                }
                         }
                         .background(
                             RoundedRectangle(cornerRadius: 20)
                                 .fill(Color(.systemGray6))
                         )
+                        .overlay(alignment: .bottomTrailing) {
+                            // Voice button
+                            voiceButton
+                                .padding(10)
+                        }
+                        .accessibilityLabel("笔记输入框")
+                        .accessibilityHint("在这里输入你的闪念，最多500字")
 
-                        // Character count
                         HStack {
+                            if speechRecognizer.isRecording {
+                                recordingIndicator
+                            }
                             Spacer()
                             Text("\(inputText.count)/500")
                                 .font(.caption2)
@@ -84,8 +110,8 @@ struct CaptureView: View {
                     }
                     .padding(.horizontal)
 
-                    // Submit button
                     Button {
+                        HapticManager.medium()
                         submitNote()
                     } label: {
                         HStack(spacing: 8) {
@@ -114,14 +140,15 @@ struct CaptureView: View {
                         )
                         .foregroundColor(.white)
                         .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .scaleEffect(submitScale)
                     }
                     .disabled(inputText.trimmingCharacters(in: .whitespaces).isEmpty || isSubmitting)
                     .padding(.horizontal)
+                    .accessibilityLabel("保存闪念")
                 }
 
                 Spacer()
 
-                // Recent notes hint
                 if !noteStore.notes.isEmpty {
                     recentNotesPreview
                 }
@@ -133,10 +160,67 @@ struct CaptureView: View {
                         .transition(.move(edge: .top).combined(with: .opacity))
                 }
             }
-            .onTapGesture {
-                isFocused = true
+            .task {
+                await speechRecognizer.requestAuthorization()
             }
         }
+    }
+
+    // MARK: - Voice
+
+    private var voiceButton: some View {
+        Button {
+            if speechRecognizer.isRecording {
+                speechRecognizer.stopRecording()
+                HapticManager.light()
+            } else {
+                Task {
+                    if !speechRecognizer.isAuthorized {
+                        await speechRecognizer.requestAuthorization()
+                    }
+                    if speechRecognizer.isAuthorized {
+                        speechRecognizer.startRecording()
+                        HapticManager.medium()
+                        showVoiceTip = false
+                    }
+                }
+            }
+        } label: {
+            Image(systemName: speechRecognizer.isRecording ? "mic.fill" : "mic")
+                .font(.title3)
+                .foregroundColor(speechRecognizer.isRecording ? .red : .gray)
+                .padding(10)
+                .background(
+                    Circle()
+                        .fill(speechRecognizer.isRecording
+                            ? Color.red.opacity(0.15)
+                            : Color(.systemGray5))
+                )
+                .scaleEffect(speechRecognizer.isRecording ? 1.2 : 1)
+                .animation(.easeInOut(duration: 0.6).repeatForever(autoreverses: true), value: speechRecognizer.isRecording)
+        }
+        .accessibilityLabel(speechRecognizer.isRecording ? "停止录音" : "开始语音输入")
+    }
+
+    private var recordingIndicator: some View {
+        HStack(spacing: 6) {
+            Circle()
+                .fill(.red)
+                .frame(width: 8, height: 8)
+                .opacity(speechRecognizer.isRecording ? 1 : 0)
+                .animation(.easeInOut(duration: 0.5).repeatForever(autoreverses: true), value: speechRecognizer.isRecording)
+
+            Text("正在聆听...")
+                .font(.caption)
+                .foregroundColor(.red)
+
+            if showVoiceTip {
+                Text("说完点击麦克风停止")
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .transition(.opacity)
     }
 
     // MARK: - Subviews
@@ -144,15 +228,20 @@ struct CaptureView: View {
     private var quickStatsBar: some View {
         HStack(spacing: 20) {
             statItem(value: "\(noteStore.notes.count)", label: "总笔记")
-            statItem(value: "\(noteStore.notes.filter { Calendar.current.isDateInToday($0.createdAt) }.count)", label: "今日")
-            statItem(value: "\(noteStore.notes.filter { Calendar.current.isDate($0.createdAt, inSameDayAs: Date().addingTimeInterval(-86400 * 7) ... Date()) }.count)", label: "本周")
+            statItem(
+                value: "\(noteStore.notes.filter { Calendar.current.isDateInToday($0.createdAt) }.count)",
+                label: "今日"
+            )
+            statItem(
+                value: "\(noteStore.notes.filter { Calendar.current.isDate($0.createdAt, inSameDayAs: Date().addingTimeInterval(-86400 * 7) ... Date()) }.count)",
+                label: "本周"
+            )
         }
         .padding(.vertical, 10)
         .padding(.horizontal, 20)
-        .background(
-            RoundedRectangle(cornerRadius: 14)
-                .fill(.ultraThinMaterial)
-        )
+        .background(RoundedRectangle(cornerRadius: 14).fill(.ultraThinMaterial))
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("统计：总笔记\(noteStore.notes.count)条，今日\(noteStore.notes.filter { Calendar.current.isDateInToday($0.createdAt) }.count)条")
     }
 
     private func statItem(value: String, label: String) -> some View {
@@ -172,7 +261,6 @@ struct CaptureView: View {
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .padding(.horizontal)
-
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {
                     ForEach(noteStore.notes.prefix(5)) { note in
@@ -190,10 +278,7 @@ struct CaptureView: View {
                             .foregroundColor(.secondary)
                         }
                         .padding(10)
-                        .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(Color(.systemGray6))
-                        )
+                        .background(RoundedRectangle(cornerRadius: 12).fill(Color(.systemGray6)))
                     }
                 }
                 .padding(.horizontal)
@@ -211,10 +296,7 @@ struct CaptureView: View {
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 12)
-        .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(.ultraThinMaterial)
-        )
+        .background(RoundedRectangle(cornerRadius: 20).fill(.ultraThinMaterial))
         .padding(.top, 60)
     }
 
@@ -225,22 +307,24 @@ struct CaptureView: View {
         guard !trimmed.isEmpty else { return }
 
         isSubmitting = true
+
+        withAnimation(.easeInOut(duration: 0.1)) { submitScale = 0.95 }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) { submitScale = 1 }
+        }
+
         noteStore.createNote(content: trimmed)
+        HapticManager.success()
 
         inputText = ""
         isSubmitting = false
 
-        withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
-            showSuccess = true
-        }
-
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) { showSuccess = true }
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
             withAnimation { showSuccess = false }
         }
 
-        // Cycle placeholder
         placeholderIndex = (placeholderIndex + 1) % placeholders.count
-
         isFocused = true
     }
 }
