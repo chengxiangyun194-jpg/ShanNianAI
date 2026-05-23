@@ -114,6 +114,7 @@
 			isa = PBXBuildFile;
 			fileRef = 547EE6199A634A668E821B3E /* MainInterface.storyboard */;
 		};
+		028A08C6196B1E735FAB0BEC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 75838688CCF7152892E118E1 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -349,6 +350,7 @@
 			path = "ShanNianAITests.xctest";
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		75838688CCF7152892E118E1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -713,6 +715,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				028A08C6196B1E735FAB0BEC /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

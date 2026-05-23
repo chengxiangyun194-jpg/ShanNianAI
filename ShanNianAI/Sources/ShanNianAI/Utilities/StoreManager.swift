@@ -130,6 +130,13 @@ final class StoreManager: ObservableObject {
         await transaction.finish()
     }
 
+    // MARK: - Simulate Purchase（StoreKit 不可用时的测试兜底）
+
+    func simulatePurchase(_ productID: String) {
+        purchasedProductIDs.insert(productID)
+        HapticManager.success()
+    }
+
     private func listenForUpdates() -> Task<Void, Never> {
         Task {
             for await result in Transaction.updates {

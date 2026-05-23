@@ -300,9 +300,17 @@ struct NoteDetailView: View {
     private func performAnalysis() {
         isAnalyzing = true
         analysisError = nil
+        // 在主 actor 上提取纯数据，避免跨 actor 访问 SwiftData Model
+        let noteContent = note.content
+        let noteSummary = note.aiSummary
+        let noteTags = note.tags
         Task {
             do {
-                let result = try await AIService.shared.analyzeInspiration(note)
+                let result = try await AIService.shared.analyzeInspiration(
+                    content: noteContent,
+                    aiSummary: noteSummary,
+                    tags: noteTags
+                )
                 analysis = result
                 withAnimation(.easeInOut(duration: 0.4)) { showAnalysis = true }
             } catch {
@@ -315,17 +323,30 @@ struct NoteDetailView: View {
     // MARK: - Share
 
     private func generateShareImage() {
-        // 直接分享文本 + 图片（异步生成不阻塞 UI）
-        let text = shareText
+        // 先提取数据避免跨 actor 访问 SwiftData Model
+        let cardData = ShareCardData(
+            categoryName: note.category.rawValue,
+            categoryIcon: note.category.icon,
+            categoryColor: note.category.color,
+            content: note.content,
+            tags: note.tags,
+            aiSummary: note.aiSummary,
+            createdAt: note.createdAt
+        )
+
+        // 先展示文本分享，图片异步生成后自动更新
         shareImage = nil
         showShareSheet = true
 
-        // 异步生成分享卡片
+        // 异步生成卡片，不阻塞 UI
         Task.detached(priority: .background) {
+            let cardView = ShareCardView(data: cardData)
             let renderer = await MainActor.run {
-                ImageRenderer(content: shareCardView)
+                ImageRenderer(content: cardView.frame(width: 350))
             }
-            if let img = renderer.uiImage {
+            // 给 ImageRenderer 一点时间渲染
+            try? await Task.sleep(nanoseconds: 100_000_000)
+            if let img = await MainActor.run(body: { renderer.uiImage }) {
                 await MainActor.run {
                     shareImage = img
                 }
@@ -343,150 +364,129 @@ struct NoteDetailView: View {
     }
 
     private var shareCardView: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            // Header
-            HStack {
-                Label("一闪AI", systemImage: "sparkles")
-                    .font(.title3.bold())
-                    .foregroundStyle(
-                        LinearGradient(colors: [.orange, .pink], startPoint: .leading, endPoint: .trailing)
-                    )
-                Spacer()
-                Text(formatDate(note.createdAt))
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-
-            Divider()
-
-            // Category
-            HStack {
-                Image(systemName: note.category.icon)
-                    .foregroundColor(note.category.color)
-                Text(note.category.rawValue)
-                    .font(.subheadline.bold())
-                    .foregroundColor(note.category.color)
-                if !note.tags.isEmpty {
-                    Text(note.tags.prefix(3).map { "#\($0)" }.joined(separator: " "))
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-            }
-
-            // Content
-            Text(note.content)
-                .font(.body)
-                .lineLimit(8)
-
-            // AI summary
-            if let summary = note.aiSummary {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("AI 摘要").font(.caption.bold()).foregroundColor(.purple)
-                    Text(summary).font(.subheadline).foregroundColor(.secondary)
-                }
-                .padding(12)
-                .background(
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(Color.purple.opacity(0.06))
-                )
-            }
-
-            Divider()
-
-            // Footer
-            HStack {
-                Text("来自 一闪AI").font(.caption).foregroundColor(.secondary)
-                Spacer()
-                Text("抓住每个闪念").font(.caption2).foregroundColor(.secondary.opacity(0.6))
-            }
-        }
-        .padding(24)
-        .frame(width: 360)
-        .background(Color(.systemBackground))
+        // Deprecated: use ShareCardView(data:) directly
+        let cardData = ShareCardData(
+            categoryName: note.category.rawValue,
+            categoryIcon: note.category.icon,
+            categoryColor: note.category.color,
+            content: note.content,
+            tags: note.tags,
+            aiSummary: note.aiSummary,
+            createdAt: note.createdAt
+        )
+        return ShareCardView(data: cardData).frame(width: 350)
     }
 
     // MARK: - Inspiration Analysis Card
 
     private func inspirationAnalysisCard(_ a: InspirationAnalysis) -> some View {
-        VStack(alignment: .leading, spacing: 14) {
-            HStack {
-                Image(systemName: "brain.head.profile")
-                    .foregroundColor(.orange)
-                Text("灵感深度分析")
-                    .font(.headline)
-                Spacer()
-                Button {
-                    withAnimation { showAnalysis = false; analysis = nil }
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.secondary)
-                }
-            }
-
-            // 核心洞察
-            VStack(alignment: .leading, spacing: 6) {
-                Text("💡 核心洞察").font(.subheadline.bold())
-                Text(a.coreInsight)
-                    .font(.body)
-                    .padding(10)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(Color.orange.opacity(0.08))
-                    )
-            }
-
-            // 创意延伸
-            VStack(alignment: .leading, spacing: 6) {
-                Text("🚀 创意延伸").font(.subheadline.bold())
-                ForEach(Array(a.extensions.enumerated()), id: \.offset) { i, ext in
-                    HStack(alignment: .top, spacing: 8) {
-                        Text("\(i + 1).").font(.caption).foregroundColor(.orange)
-                        Text(ext).font(.subheadline)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                HStack {
+                    Image(systemName: "brain.head.profile")
+                        .foregroundColor(.orange)
+                    Text("灵感深度分析")
+                        .font(.headline)
+                    Spacer()
+                    Button {
+                        withAnimation { showAnalysis = false; analysis = nil }
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundColor(.secondary)
                     }
                 }
-            }
 
-            // 实践建议
-            VStack(alignment: .leading, spacing: 6) {
-                Text("🎯 实践建议").font(.subheadline.bold())
-                ForEach(Array(a.suggestions.enumerated()), id: \.offset) { i, s in
-                    HStack(alignment: .top, spacing: 8) {
-                        Image(systemName: "checkmark.circle.fill")
-                            .font(.caption).foregroundColor(.green)
-                        Text(s).font(.subheadline)
+                // 核心洞察
+                insightBox(icon: "💡", title: "核心洞察", color: .orange) {
+                    Text(a.coreInsight).font(.body)
+                }
+
+                // 市场角度 + 用户痛点
+                HStack(alignment: .top, spacing: 10) {
+                    insightBox(icon: "📊", title: "市场切口", color: .blue) {
+                        Text(a.marketAngle).font(.subheadline)
+                    }
+                    insightBox(icon: "🎯", title: "用户痛点", color: .red) {
+                        Text(a.userPainPoint).font(.subheadline)
                     }
                 }
-            }
 
-            // 相关领域
-            if !a.relatedFields.isEmpty {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("🔗 相关领域").font(.subheadline.bold())
-                    FlowLayout(spacing: 6) {
-                        ForEach(a.relatedFields, id: \.self) { field in
-                            Text(field)
-                                .font(.caption)
-                                .padding(.horizontal, 10).padding(.vertical, 4)
-                                .background(
-                                    Capsule()
-                                        .fill(Color.blue.opacity(0.1))
-                                )
-                                .foregroundColor(.blue)
+                // 可执行步骤
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("🪜 执行路线图").font(.subheadline.bold())
+                    ForEach(Array(a.actionableSteps.enumerated()), id: \.offset) { i, step in
+                        HStack(alignment: .top, spacing: 10) {
+                            Text("Step \(i + 1)")
+                                .font(.caption.bold())
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 8).padding(.vertical, 3)
+                                .background(Capsule().fill(Color.orange))
+                            Text(step).font(.subheadline)
+                        }
+                    }
+                }
+
+                // 变现 + 风险 + 壁垒
+                HStack(alignment: .top, spacing: 10) {
+                    insightBox(icon: "💰", title: "变现逻辑", color: .green) {
+                        Text(a.monetization).font(.subheadline)
+                    }
+                    insightBox(icon: "⚠️", title: "最大风险", color: .red) {
+                        Text(a.riskWarning).font(.subheadline)
+                    }
+                }
+                insightBox(icon: "🏰", title: "竞争壁垒", color: .purple) {
+                    Text(a.moat).font(.subheadline)
+                }
+
+                // 延伸方向
+                if !a.extensions.isEmpty {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("🔮 未来延伸").font(.subheadline.bold())
+                        ForEach(Array(a.extensions.enumerated()), id: \.offset) { i, ext in
+                            HStack(alignment: .top, spacing: 8) {
+                                Image(systemName: "circle.fill").font(.system(size: 6))
+                                    .foregroundColor(.orange).padding(.top, 5)
+                                Text(ext).font(.subheadline)
+                            }
+                        }
+                    }
+                }
+
+                // 类似案例
+                if !a.relatedCases.isEmpty {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("📚 类似案例").font(.subheadline.bold())
+                        ForEach(a.relatedCases, id: \.self) { case_ in
+                            HStack(alignment: .top, spacing: 8) {
+                                Image(systemName: "arrow.right.circle.fill")
+                                    .font(.caption).foregroundColor(.blue)
+                                Text(case_).font(.subheadline)
+                            }
                         }
                     }
                 }
             }
+            .padding(16)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color(.systemBackground))
+                    .shadow(color: .black.opacity(0.05), radius: 8, y: 2)
+            )
         }
-        .padding(16)
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color(.systemGray6).opacity(0.5))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(Color.orange.opacity(0.2), lineWidth: 1)
-        )
+    }
+
+    private func insightBox(icon: String, title: String, color: Color, @ViewBuilder content: () -> some View) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("\(icon) \(title)").font(.caption.bold()).foregroundColor(color)
+            content()
+                .padding(10)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(color.opacity(0.06))
+                )
+        }
     }
 
     // MARK: - Helpers
@@ -691,3 +691,88 @@ struct FlowLayout: Layout {
         return (CGSize(width: maxWidth, height: totalHeight), frames)
     }
 }
+
+// MARK: - Share Card Data & View
+
+struct ShareCardData {
+    let categoryName: String
+    let categoryIcon: String
+    let categoryColor: Color
+    let content: String
+    let tags: [String]
+    let aiSummary: String?
+    let createdAt: Date
+
+    var formattedDate: String {
+        let f = DateFormatter()
+        f.dateFormat = "yyyy-MM-dd HH:mm"
+        return f.string(from: createdAt)
+    }
+}
+
+struct ShareCardView: View {
+    let data: ShareCardData
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            // Header
+            HStack {
+                Label("一闪AI", systemImage: "sparkles")
+                    .font(.title3.bold())
+                    .foregroundStyle(
+                        LinearGradient(colors: [.orange, .pink], startPoint: .leading, endPoint: .trailing)
+                    )
+                Spacer()
+                Text(data.formattedDate)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+
+            Divider()
+
+            // Category
+            HStack {
+                Image(systemName: data.categoryIcon)
+                    .foregroundColor(data.categoryColor)
+                Text(data.categoryName)
+                    .font(.subheadline.bold())
+                    .foregroundColor(data.categoryColor)
+                if !data.tags.isEmpty {
+                    Text(data.tags.prefix(3).map { "#\($0)" }.joined(separator: " "))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+
+            // Content
+            Text(data.content)
+                .font(.body)
+                .lineLimit(8)
+
+            // AI summary
+            if let summary = data.aiSummary {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("AI 摘要").font(.caption.bold()).foregroundColor(.purple)
+                    Text(summary).font(.subheadline).foregroundColor(.secondary)
+                }
+                .padding(12)
+                .background(
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color.purple.opacity(0.06))
+                )
+            }
+
+            Divider()
+
+            // Footer
+            HStack {
+                Text("来自 一闪AI").font(.caption).foregroundColor(.secondary)
+                Spacer()
+                Text("抓住每个闪念").font(.caption2).foregroundColor(.secondary.opacity(0.6))
+            }
+        }
+        .padding(24)
+        .background(Color(.systemBackground))
+    }
+}
+

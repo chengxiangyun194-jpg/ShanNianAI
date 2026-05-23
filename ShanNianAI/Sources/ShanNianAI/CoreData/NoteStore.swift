@@ -124,9 +124,11 @@ final class NoteStore: ObservableObject {
         updateStreak()
         syncWidgetData()
 
+        let userPickedCategory = category != nil && category != .uncategorized
+
         aiTask = Task {
             guard !Task.isCancelled else { return }
-            await autoClassify(note)
+            await autoClassify(note, preserveCategory: userPickedCategory)
             guard !Task.isCancelled else { return }
             await findRelated(for: note)
         }
@@ -216,7 +218,7 @@ final class NoteStore: ObservableObject {
 
     // MARK: - AI Pipelines
 
-    func autoClassify(_ note: Note) async {
+    func autoClassify(_ note: Note, preserveCategory: Bool = false) async {
         guard aiService.isConfigured else { return }
 
         if !StoreManager.shared.isPro && UsageTracker.isAILimitReached {
@@ -226,7 +228,10 @@ final class NoteStore: ObservableObject {
 
         do {
             let result = try await aiService.classify(content: note.content)
-            note.category = result.category
+            // 用户手动选了分类时，保留用户选择，AI 只补充标签和摘要
+            if !preserveCategory {
+                note.category = result.category
+            }
             note.tags = result.tags
             note.aiSummary = result.summary
             note.modifiedAt = Date()
@@ -240,8 +245,18 @@ final class NoteStore: ObservableObject {
 
     func findRelated(for note: Note) async {
         guard aiService.isConfigured, notes.count > 1 else { return }
+        // 在主 actor 上提取纯数据，避免跨 actor 访问 SwiftData Model
+        let currentId = note.id.uuidString
+        let currentContent = note.content
+        let candidates = notes.compactMap { n -> (id: String, content: String)? in
+            n.id == note.id ? nil : (n.id.uuidString, n.content)
+        }
         do {
-            let related = try await aiService.findRelatedNotes(current: note, allNotes: notes)
+            let related = try await aiService.findRelatedNotes(
+                currentId: currentId,
+                currentContent: currentContent,
+                candidates: candidates
+            )
             note.relatedNoteIDs = related
             save()
         } catch { }
@@ -263,12 +278,17 @@ final class NoteStore: ObservableObject {
             return
         }
 
+        // 在主 actor 上提取纯文本数据
+        let notesText = thisWeek.map { "- [\($0.category.rawValue)] \($0.content)" }.joined(separator: "\n")
+        let count = thisWeek.count
+
         isLoading = true
         defer { isLoading = false }
 
         do {
             let insight = try await aiService.generateWeeklyInsight(
-                notes: thisWeek,
+                notesText: notesText,
+                noteCount: count,
                 weekStart: weekStart
             )
             weeklyInsight = insight

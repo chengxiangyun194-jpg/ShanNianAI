@@ -1,0 +1,58 @@
+{
+  "identifier" : "69877646",
+  "nonConsumable" : [],
+  "subscriptionProducts" : [
+    {
+      "adHocOffers" : [],
+      "codeOffers" : [],
+      "displayPrice" : "¥6.00",
+      "familyShareable" : false,
+      "groupNumber" : 1,
+      "internalID" : "MONTHLY",
+      "introductoryOffer" : null,
+      "localizations" : [
+        {
+          "description" : "月度订阅，解锁全部 AI 功能",
+          "displayName" : "月度订阅",
+          "locale" : "zh_CN"
+        }
+      ],
+      "productID" : "com.shanian.flashai.pro.monthly",
+      "recurringSubscriptionPeriod" : {
+        "unit" : "month",
+        "value" : 1
+      },
+      "referenceName" : "月度订阅",
+      "subscriptionGroupID" : "21457806",
+      "type" : "RecurringSubscription"
+    },
+    {
+      "adHocOffers" : [],
+      "codeOffers" : [],
+      "displayPrice" : "¥50.00",
+      "familyShareable" : false,
+      "groupNumber" : 1,
+      "internalID" : "YEARLY",
+      "introductoryOffer" : null,
+      "localizations" : [
+        {
+          "description" : "年度订阅，解锁全部 AI 功能",
+          "displayName" : "年度订阅",
+          "locale" : "zh_CN"
+        }
+      ],
+      "productID" : "com.shanian.flashai.pro.yearly",
+      "recurringSubscriptionPeriod" : {
+        "unit" : "year",
+        "value" : 1
+      },
+      "referenceName" : "年度订阅",
+      "subscriptionGroupID" : "21457806",
+      "type" : "RecurringSubscription"
+    }
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}

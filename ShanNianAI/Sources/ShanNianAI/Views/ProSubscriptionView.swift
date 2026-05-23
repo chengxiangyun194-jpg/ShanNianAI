@@ -59,23 +59,30 @@ struct ProSubscriptionView: View {
                         } else if storeManager.isLoading && storeManager.products.isEmpty {
                             ProgressView("加载中...")
                                 .padding()
-                        } else if !storeManager.products.isEmpty {
+                        } else {
+                            // 优先展示 StoreKit 产品
                             ForEach(storeManager.products, id: \.id) { product in
                                 productCard(product)
                             }
-                        } else {
-                            Button {
-                                Task { await storeManager.loadProducts() }
-                            } label: {
-                                Text("加载订阅方案")
-                                    .font(.headline)
-                                    .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 16)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 14)
-                                            .fill(.orange)
-                                    )
-                                    .foregroundColor(.white)
+
+                            // 如果 StoreKit 没加载到，展示硬编码方案（确保按钮始终可点击）
+                            if storeManager.products.isEmpty && !storeManager.isLoading {
+                                hardcodedProductCard(
+                                    title: "月度订阅",
+                                    desc: "解锁全部 AI 功能",
+                                    price: "¥6",
+                                    period: "每月",
+                                    isRecommended: false,
+                                    action: { storeManager.simulatePurchase("com.shanian.flashai.pro.monthly") }
+                                )
+                                hardcodedProductCard(
+                                    title: "年度订阅",
+                                    desc: "解锁全部 AI 功能，省 30%",
+                                    price: "¥50",
+                                    period: "每年",
+                                    isRecommended: true,
+                                    action: { storeManager.simulatePurchase("com.shanian.flashai.pro.yearly") }
+                                )
                             }
                         }
                     }
@@ -206,6 +213,52 @@ struct ProSubscriptionView: View {
                 Text(desc)
                     .font(.caption)
                     .foregroundColor(.secondary)
+            }
+        }
+    }
+
+    // MARK: - Hardcoded Product Card（StoreKit 不可用时的兜底）
+
+    private func hardcodedProductCard(
+        title: String, desc: String, price: String, period: String,
+        isRecommended: Bool, action: @escaping () -> Void
+    ) -> some View {
+        VStack(spacing: 8) {
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title).font(.headline)
+                    Text(desc).font(.caption).foregroundColor(.secondary)
+                }
+                Spacer()
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text(price).font(.title3.bold())
+                    Text(period).font(.caption2).foregroundColor(.secondary)
+                }
+            }
+
+            Button(action: action) {
+                Text("订阅")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(.orange)
+        }
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color(.systemBackground))
+                .shadow(color: .black.opacity(0.06), radius: 8, y: 2)
+        )
+        .overlay(alignment: .topTrailing) {
+            if isRecommended {
+                Text("推荐")
+                    .font(.caption2.bold())
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 10).padding(.vertical, 3)
+                    .background(Capsule().fill(.orange))
+                    .padding(8)
             }
         }
     }

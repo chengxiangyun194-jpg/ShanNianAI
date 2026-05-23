@@ -48,9 +48,7 @@ final class AIService {
 
     // MARK: - Weekly Insights
 
-    func generateWeeklyInsight(notes: [Note], weekStart: Date) async throws -> WeeklyInsight {
-        let notesText = notes.map { "- [\($0.category.rawValue)] \($0.content)" }.joined(separator: "\n")
-
+    func generateWeeklyInsight(notesText: String, noteCount: Int, weekStart: Date) async throws -> WeeklyInsight {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
         let weekStr = formatter.string(from: weekStart)
@@ -66,7 +64,7 @@ final class AIService {
           "weekStartDate": "\(weekStr)",
           "dominantCategory": "主要分类",
           "topTags": ["高频标签1", "高频标签2"],
-          "noteCount": \(notes.count),
+          "noteCount": \(noteCount),
           "summary": "本周核心洞察（50字内）",
           "suggestion": "给用户的行动建议（50字内）",
           "emotionalTrend": "整体情绪趋势描述"
@@ -80,14 +78,14 @@ final class AIService {
 
     // MARK: - Find Related Notes
 
-    func findRelatedNotes(current: Note, allNotes: [Note]) async throws -> [UUID] {
-        let others = allNotes.filter { $0.id != current.id }.prefix(20)
+    func findRelatedNotes(currentId: String, currentContent: String, candidates: [(id: String, content: String)]) async throws -> [UUID] {
+        let others = candidates.prefix(20)
         let contextText = others.map { "[\($0.id)] \($0.content)" }.joined(separator: "\n")
 
         let prompt = """
         找出与以下笔记内容相关的笔记ID。只返回可能存在关联的ID。
 
-        当前笔记：\(current.content)
+        当前笔记：\(currentContent)
 
         候选笔记：
         \(contextText)
@@ -106,24 +104,31 @@ final class AIService {
         return resp.relatedIDs.compactMap { UUID(uuidString: $0) }
     }
 
+
     // MARK: - Inspiration Analysis
 
-    func analyzeInspiration(_ note: Note) async throws -> InspirationAnalysis {
+    func analyzeInspiration(content: String, aiSummary: String?, tags: [String]) async throws -> InspirationAnalysis {
         let prompt = """
-        你是一个创意孵化助手。请对以下灵感笔记进行深度分析和延伸。
+        你是一个顶级创业顾问和产品策略师。用户记录了一条灵感，请进行深度孵化分析。
+        要求：每个回答必须具体、可执行、有例证。拒绝空洞的套话。
 
         灵感内容：
-        \(note.content)
+        \(content)
 
-        AI摘要：\(note.aiSummary ?? "无")
-        标签：\(note.tags.joined(separator: "、"))
+        AI摘要：\(aiSummary ?? "无")
+        标签：\(tags.joined(separator: "、"))
 
         请返回如下JSON（不要包含markdown代码块标记）：
         {
-          "extensions": ["创意延伸1", "创意延伸2", "创意延伸3"],
-          "suggestions": ["实践建议1", "实践建议2"],
-          "relatedFields": ["相关领域1", "相关领域2"],
-          "coreInsight": "核心洞察（30字内）"
+          "coreInsight": "一句话点出这个灵感最独特的价值内核，20字",
+          "marketAngle": "这个想法能切入什么具体市场缺口？引用一个同类案例说明差异化，40字内",
+          "userPainPoint": "它解决的目标用户最痛的一个点是什么？15字内",
+          "actionableSteps": ["第一步具体做什么（含工具/平台建议）", "第二步", "第三步"],
+          "monetization": "最可行的变现方式及定价逻辑，30字内",
+          "riskWarning": "最大的一个风险或失败模式是什么？20字内",
+          "moat": "这个想法一旦做起来，壁垒在哪里？20字内",
+          "extensions": ["3个月后可延伸的方向1", "方向2", "方向3"],
+          "relatedCases": ["已成功的类似案例1（产品名+一句话）", "案例2"]
         }
         """
 

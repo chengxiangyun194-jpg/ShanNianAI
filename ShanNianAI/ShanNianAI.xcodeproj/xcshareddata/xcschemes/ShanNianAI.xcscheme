@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "5CA0C98EBF99FB4E0908DE39"
+               BlueprintIdentifier = "F35846675C0143E1A9A03903"
                BuildableName = "ShanNianAI.app"
                BlueprintName = "ShanNianAI"
                ReferencedContainer = "container:ShanNianAI.xcodeproj">
@@ -28,7 +28,7 @@
             buildForAnalyzing = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "AC9EAC460EA39DB7CFCF696A"
+               BlueprintIdentifier = "AFADEC420E65437489811851"
                BuildableName = "ShanNianAITests.xctest"
                BlueprintName = "ShanNianAITests"
                ReferencedContainer = "container:ShanNianAI.xcodeproj">
@@ -47,7 +47,7 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "AC9EAC460EA39DB7CFCF696A"
+               BlueprintIdentifier = "AFADEC420E65437489811851"
                BuildableName = "ShanNianAITests.xctest"
                BlueprintName = "ShanNianAITests"
                ReferencedContainer = "container:ShanNianAI.xcodeproj">
@@ -69,12 +69,15 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "5CA0C98EBF99FB4E0908DE39"
+            BlueprintIdentifier = "F35846675C0143E1A9A03903"
             BuildableName = "ShanNianAI.app"
             BlueprintName = "ShanNianAI"
             ReferencedContainer = "container:ShanNianAI.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <StoreKitConfigurationFileReference
+         identifier = "ShanNianAI.storekit">
+      </StoreKitConfigurationFileReference>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -86,7 +89,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "5CA0C98EBF99FB4E0908DE39"
+            BlueprintIdentifier = "F35846675C0143E1A9A03903"
             BuildableName = "ShanNianAI.app"
             BlueprintName = "ShanNianAI"
             ReferencedContainer = "container:ShanNianAI.xcodeproj">

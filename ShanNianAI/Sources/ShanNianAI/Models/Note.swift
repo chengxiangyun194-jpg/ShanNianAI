@@ -8,10 +8,15 @@ import SwiftUI
 
 struct InspirationAnalysis: Codable, Identifiable {
     var id: String { coreInsight }
-    let extensions: [String]
-    let suggestions: [String]
-    let relatedFields: [String]
     let coreInsight: String
+    let marketAngle: String
+    let userPainPoint: String
+    let actionableSteps: [String]
+    let monetization: String
+    let riskWarning: String
+    let moat: String
+    let extensions: [String]
+    let relatedCases: [String]
 }
 
 

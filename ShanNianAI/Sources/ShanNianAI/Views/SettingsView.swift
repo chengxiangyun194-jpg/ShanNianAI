@@ -10,6 +10,7 @@ struct SettingsView: View {
     @State private var showProSheet = false
     @State private var devApiKey = UserDefaults.standard.string(forKey: "dev_direct_api_key") ?? ""
     @State private var showDevKeySaved = false
+    @State private var showDevKeyEditor = false
     @State private var showExporter = false
     @State private var exportURL: URL?
     @State private var selectedExportFormat: ExportFormat = .markdown
@@ -46,31 +47,29 @@ struct SettingsView: View {
 
                 // AI 状态
 
-                // 开发者 Key（优先使用代理，Key 为回退）
+                // AI 状态
+
+                // API Key（仅显示状态，不暴露密钥）
                 Section {
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("开发者：直连 API Key").font(.subheadline.bold())
-                        SecureField("sk-...（DeepSeek 或 OpenAI）", text: $devApiKey)
-                            .textContentType(.password)
-                            .font(.caption.monospaced())
-                            .padding(10)
-                            .background(RoundedRectangle(cornerRadius: 8).fill(Color(.systemGray6)))
-                        HStack {
-                            Text("仅开发测试用，优先走代理").font(.caption2).foregroundColor(.secondary)
-                            Spacer()
-                            Button("保存") {
-                                UserDefaults.standard.set(devApiKey, forKey: "dev_direct_api_key")
-                                HapticManager.success()
-                                showDevKeySaved = true
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) { showDevKeySaved = false }
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .controlSize(.small)
-                            .disabled(devApiKey.trimmingCharacters(in: .whitespaces).isEmpty)
+                    HStack {
+                        Image(systemName: "key.fill")
+                            .foregroundColor(devApiKey.isEmpty ? .gray : .green)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("API Key").font(.subheadline.bold())
+                            Text(devApiKey.isEmpty ? "未配置" : "已配置（●●●●●●●●）")
+                                .font(.caption)
+                                .foregroundColor(devApiKey.isEmpty ? .orange : .green)
                         }
+                        Spacer()
+                        Button(devApiKey.isEmpty ? "添加" : "更改") {
+                            showDevKeyEditor = true
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
                     }
                 }
-                footer: { Text("Key 仅存本地。留空则走服务端代理") }
+                footer: { Text("Key 仅存本地，不会上传或展示") }
+
 
                 Section {
                     HStack {
@@ -182,6 +181,9 @@ struct SettingsView: View {
             }
             .navigationTitle("设置")
             .sheet(isPresented: $showProSheet) { ProSubscriptionView() }
+            .sheet(isPresented: $showDevKeyEditor) {
+                DevKeyEditorView(isPresented: $showDevKeyEditor)
+            }
             .sheet(isPresented: $showExporter) {
                 if let url = exportURL {
                     ShareSheet(items: [url])
@@ -239,4 +241,86 @@ struct ShareSheet: UIViewControllerRepresentable {
     }
 
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
+}
+
+// MARK: - Dev Key Editor (不会回显已有 Key)
+
+struct DevKeyEditorView: View {
+    @Binding var isPresented: Bool
+    @State private var newKey = ""
+    @State private var showSaved = false
+
+    private var hasExistingKey: Bool {
+        !(UserDefaults.standard.string(forKey: "dev_direct_api_key") ?? "").isEmpty
+    }
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 20) {
+                Image(systemName: "key.fill")
+                    .font(.system(size: 40))
+                    .foregroundColor(.orange)
+                    .padding(.top, 30)
+
+                Text(hasExistingKey ? "更改 API Key" : "添加 API Key")
+                    .font(.title3.bold())
+
+                Text("Key 仅存本地，不会上传。\n旧 Key 不会被显示，输入新 Key 后覆盖。")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+
+                SecureField("sk-...（DeepSeek 或 OpenAI）", text: $newKey)
+                    .textContentType(.newPassword)
+                    .font(.caption.monospaced())
+                    .padding(12)
+                    .background(RoundedRectangle(cornerRadius: 10).fill(Color(.systemGray6)))
+                    .padding(.horizontal)
+
+                Button {
+                    let trimmed = newKey.trimmingCharacters(in: .whitespaces)
+                    if trimmed.isEmpty {
+                        UserDefaults.standard.removeObject(forKey: "dev_direct_api_key")
+                    } else {
+                        UserDefaults.standard.set(trimmed, forKey: "dev_direct_api_key")
+                    }
+                    HapticManager.success()
+                    showSaved = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                        isPresented = false
+                    }
+                } label: {
+                    Text("保存")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(RoundedRectangle(cornerRadius: 12).fill(Color.blue))
+                }
+                .padding(.horizontal)
+                .disabled(newKey.trimmingCharacters(in: .whitespaces).isEmpty && hasExistingKey)
+
+                if hasExistingKey {
+                    Button("清除已有 Key", role: .destructive) {
+                        UserDefaults.standard.removeObject(forKey: "dev_direct_api_key")
+                        HapticManager.warning()
+                        isPresented = false
+                    }
+                    .font(.caption)
+                }
+
+                Spacer()
+            }
+            .navigationTitle("API Key")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("取消") { isPresented = false }
+                }
+            }
+            .alert("已保存", isPresented: $showSaved) {
+                Button("好的", role: .cancel) {}
+            } message: { Text("Key 已安全存储") }
+        }
+    }
 }

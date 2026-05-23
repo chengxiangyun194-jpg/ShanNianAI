@@ -1,0 +1,9 @@
+# 闪念AI — Cloudflare Worker 配置
+# 使用方式: wrangler deploy  或 直接粘贴 api/chat.js 到 Cloudflare Dashboard
+
+name = "shanian-ai-proxy"
+main = "chat.js"
+compatibility_date = "2025-01-01"
+
+[vars]
+APP_TOKEN = "shan-nian-ai-2026"
