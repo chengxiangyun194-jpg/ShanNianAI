@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>一闪App图标预览</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #1a1a2e;
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    padding: 30px;
+    text-align: center;
+  }
+  h1 { font-size: 28px; margin-bottom: 10px; }
+  .subtitle { color: #999; margin-bottom: 30px; font-size: 14px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .card {
+    background: #16213e;
+    border-radius: 16px;
+    padding: 20px;
+    transition: transform 0.2s;
+    cursor: pointer;
+  }
+  .card:hover { transform: scale(1.03); background: #1a2a4a; }
+  .card img {
+    width: 180px;
+    height: 180px;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    margin-bottom: 12px;
+  }
+  .card h3 { font-size: 18px; margin-bottom: 4px; }
+  .card p { font-size: 13px; color: #aaa; }
+  .selected {
+    border: 3px solid #ff4444;
+    box-shadow: 0 0 24px rgba(255,68,68,0.3);
+  }
+  .btn {
+    margin-top: 30px;
+    padding: 12px 32px;
+    background: #ff4444;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  .btn:hover { background: #ff6666; }
+</style>
+</head>
+<body>
+<h1>🔥 一闪App — 图标方案预览</h1>
+<p class="subtitle">点击卡片选中，下方按钮应用</p>
+
+<div class="grid">
+  <div class="card" onclick="select('v1_molten', this)">
+    <img src="v1_molten.png" alt="V1 熔核">
+    <h3>V1 · 熔核 Molten</h3>
+    <p>暗红底 + 炽橙能量星 + 射线</p>
+  </div>
+  <div class="card" onclick="select('v2_neon', this)">
+    <img src="v2_neon.png" alt="V2 霓虹">
+    <h3>V2 · 霓虹 Neon</h3>
+    <p>纯黑底 + 荧光玫红闪电</p>
+  </div>
+  <div class="card" onclick="select('v3_phoenix', this)">
+    <img src="v3_phoenix.png" alt="V3 凤凰">
+    <h3>V3 · 凤凰 Phoenix</h3>
+    <p>火焰双翼 + 中心光柱</p>
+  </div>
+  <div class="card" onclick="select('v4_crystal', this)">
+    <img src="v4_crystal.png" alt="V4 晶耀">
+    <h3>V4 · 晶耀 Crystal</h3>
+    <p>橙渐变 + 六芒晶格几何</p>
+  </div>
+</div>
+
+<p id="status" style="margin-top:20px;color:#ff6b6b;font-size:14px;"></p>
+
+<script>
+let chosen = null;
+function select(name, el) {
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  chosen = name;
+  document.getElementById('status').textContent = '已选中: ' + name + ' — 复制文件名告诉我即可';
+}
+</script>
+</body>
+</html>
